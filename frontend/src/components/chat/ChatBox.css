@@ -1,0 +1,322 @@
+.chat-box {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #fafafa;
+}
+
+/* 消息容器 */
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: #fafafa;
+}
+
+/* 欢迎界面 */
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+  text-align: center;
+}
+
+.welcome-avatar {
+  margin-bottom: 16px;
+}
+
+.quick-questions {
+  margin-top: 32px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.quick-question-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: left;
+}
+
+.quick-question-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #52c41a;
+}
+
+/* 消息列表 */
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 消息容器 */
+.message-container {
+  display: flex;
+  width: 100%;
+}
+
+.user-message {
+  justify-content: flex-end;
+}
+
+.assistant-message {
+  justify-content: flex-start;
+}
+
+.message-wrapper {
+  display: flex;
+  align-items: flex-start;
+  max-width: 70%;
+}
+
+/* 消息气泡 */
+.message-bubble {
+  padding: 12px 16px;
+  border-radius: 18px;
+  position: relative;
+  word-wrap: break-word;
+  line-height: 1.5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message-bubble.user {
+  background: linear-gradient(135deg, #52c41a, #73d13d);
+  color: white;
+  border-bottom-right-radius: 4px;
+  margin-left: 8px;
+}
+
+.message-bubble.assistant {
+  background: white;
+  color: #262626;
+  border: 1px solid #f0f0f0;
+  border-bottom-left-radius: 4px;
+  margin-right: 8px;
+}
+
+/* 消息内容 */
+.message-content {
+  margin-bottom: 8px;
+  white-space: pre-wrap;
+}
+
+.message-content strong {
+  font-weight: 600;
+}
+
+/* 消息元数据 */
+.message-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  opacity: 0.7;
+}
+
+/* 错误和离线指示器 */
+.message-error-indicator,
+.message-fallback-indicator {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+/* 相关概念 */
+.related-concepts {
+  margin-top: 8px;
+}
+
+.concept-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 2px 4px 2px 0;
+  background: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #1677ff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.concept-tag:hover {
+  background: #bae7ff;
+  border-color: #69c0ff;
+  transform: scale(1.05);
+}
+
+/* 加载消息 */
+.loading-message {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  opacity: 0.8;
+}
+
+.loading-message .message-bubble {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+/* 输入区域 */
+.input-container {
+  padding: 16px 20px;
+  background: white;
+  border-top: 1px solid #f0f0f0;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: flex-end;
+  max-width: 800px;
+  margin: 0 auto;
+  gap: 0;
+}
+
+.input-wrapper .ant-input {
+  border-right: none;
+  border-radius: 12px 0 0 12px !important;
+}
+
+.input-wrapper .ant-btn {
+  border-radius: 0 12px 12px 0 !important;
+  height: auto;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.input-hint {
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .messages-container {
+    padding: 16px;
+  }
+  
+  .message-wrapper {
+    max-width: 85%;
+  }
+  
+  .welcome-container {
+    padding: 20px;
+  }
+  
+  .quick-questions {
+    margin-top: 24px;
+  }
+  
+  .input-container {
+    padding: 12px 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .message-wrapper {
+    max-width: 95%;
+  }
+  
+  .message-bubble {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+  
+  .concept-tag {
+    font-size: 11px;
+    padding: 1px 6px;
+  }
+}
+
+/* 滚动条样式 */
+.messages-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 2px;
+}
+
+.messages-container::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}
+
+/* 动画效果 */
+.message-container {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.loading-message {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* 消息气泡悬停效果 */
+.message-bubble.assistant:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+/* 用户消息特殊样式 */
+.message-bubble.user::before {
+  content: '';
+  position: absolute;
+  right: -8px;
+  bottom: 4px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-top: 8px solid currentColor;
+  border-bottom: 8px solid transparent;
+}
+
+/* AI消息特殊样式 */
+.message-bubble.assistant::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  bottom: 4px;
+  width: 0;
+  height: 0;
+  border-right: 8px solid white;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}

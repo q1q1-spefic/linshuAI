@@ -1,0 +1,369 @@
+.knowledge-graph-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #fafafa;
+  position: relative;
+}
+
+/* 控制面板 */
+.control-panel {
+  margin: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.control-panel .ant-card-body {
+  padding: 16px;
+}
+
+/* 图谱主区域 */
+.graph-main {
+  flex: 1;
+  position: relative;
+  margin: 0 16px 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* SVG样式 */
+.knowledge-graph-svg {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
+}
+
+.knowledge-graph-svg:active {
+  cursor: grabbing;
+}
+
+/* 节点样式 */
+.node {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.node:hover circle {
+  stroke-width: 3;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.node:hover text {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.node circle {
+  transition: all 0.3s ease;
+}
+
+.node text {
+  transition: all 0.3s ease;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+/* 连线样式 */
+.links line {
+  transition: all 0.3s ease;
+}
+
+.links line:hover {
+  stroke-width: 4;
+  stroke-opacity: 0.8;
+}
+
+/* 图例 */
+.legend {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 5;
+}
+
+.legend .ant-card-body {
+  padding: 12px;
+}
+
+.legend .ant-typography {
+  margin-bottom: 8px;
+}
+
+.legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.legend-item .ant-badge {
+  margin: 0;
+}
+
+/* 选中状态 */
+.node.selected circle {
+  stroke: #ff4d4f;
+  stroke-width: 4;
+  filter: drop-shadow(0 0 8px rgba(255, 77, 79, 0.5));
+}
+
+.node.highlighted circle {
+  stroke: #faad14;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 6px rgba(250, 173, 20, 0.5));
+}
+
+/* 连接线高亮 */
+.links line.highlighted {
+  stroke: #ff4d4f;
+  stroke-width: 3;
+  stroke-opacity: 0.8;
+  filter: drop-shadow(0 0 4px rgba(255, 77, 79, 0.3));
+}
+
+/* 搜索高亮 */
+.node.search-match circle {
+  stroke: #52c41a;
+  stroke-width: 3;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    stroke-opacity: 1;
+  }
+  50% {
+    stroke-opacity: 0.5;
+  }
+  100% {
+    stroke-opacity: 1;
+  }
+}
+
+/* 工具提示 */
+.graph-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 100;
+  max-width: 200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 加载状态 */
+.graph-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 10;
+}
+
+.graph-loading .ant-spin {
+  margin-bottom: 16px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .control-panel {
+    margin: 8px;
+  }
+  
+  .control-panel .ant-space {
+    flex-wrap: wrap;
+  }
+  
+  .graph-main {
+    margin: 0 8px 8px;
+  }
+  
+  .legend {
+    top: 8px;
+    left: 8px;
+    font-size: 11px;
+  }
+  
+  .node text {
+    font-size: 10px;
+  }
+  
+  .knowledge-graph-svg {
+    cursor: default;
+  }
+}
+
+@media (max-width: 576px) {
+  .control-panel .ant-space {
+    width: 100%;
+  }
+  
+  .control-panel .ant-input {
+    width: 100% !important;
+  }
+  
+  .control-panel .ant-select {
+    width: 100% !important;
+  }
+  
+  .legend {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin: 8px;
+    order: -1;
+  }
+  
+  .graph-main {
+    order: 1;
+  }
+}
+
+/* 全屏模式 */
+.knowledge-graph-container.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: white;
+}
+
+.knowledge-graph-container.fullscreen .control-panel {
+  margin: 16px;
+}
+
+.knowledge-graph-container.fullscreen .graph-main {
+  margin: 0 16px 16px;
+}
+
+/* 缩放控制 */
+.zoom-controls {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 5;
+}
+
+.zoom-controls .ant-btn {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 动画效果 */
+.graph-container {
+  transition: transform 0.3s ease;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 路径高亮动画 */
+@keyframes pathHighlight {
+  0% {
+    stroke-dasharray: 0, 100;
+  }
+  100% {
+    stroke-dasharray: 100, 0;
+  }
+}
+
+.path-highlighted {
+  animation: pathHighlight 2s ease-in-out;
+  stroke-dasharray: 5, 5;
+}
+
+/* 节点分组样式 */
+.node-group-organ {
+  transform-origin: center;
+}
+
+.node-group-function {
+  transform-origin: center;
+}
+
+.node-group-pathology {
+  transform-origin: center;
+}
+
+/* 暗色主题支持 */
+@media (prefers-color-scheme: dark) {
+  .knowledge-graph-container {
+    background: #141414;
+  }
+  
+  .graph-main {
+    background: #1f1f1f;
+  }
+  
+  .knowledge-graph-svg {
+    background: linear-gradient(135deg, #1a1a1a 0%, #262626 100%);
+  }
+  
+  .legend {
+    background: rgba(31, 31, 31, 0.95);
+  }
+  
+  .node text {
+    fill: #e6e6e6;
+  }
+  
+  .graph-tooltip {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+  }
+}

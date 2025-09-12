@@ -1,0 +1,339 @@
+/* 评估介绍页面 */
+.assessment-intro {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 40px 20px;
+  }
+  
+  .intro-card {
+    max-width: 600px;
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+  
+  .intro-content {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  
+  .assessment-info {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+  }
+  
+  /* 评估容器 */
+  .assessment-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  /* 评估头部 */
+  .assessment-header {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .progress-info {
+    flex: 1;
+  }
+  
+  .time-info {
+    min-width: 120px;
+    text-align: right;
+  }
+  
+  /* 题目卡片 */
+  .question-card {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-height: 400px;
+  }
+  
+  .question-header {
+    margin-bottom: 20px;
+  }
+  
+  .question-text {
+    margin-bottom: 32px;
+    line-height: 1.6;
+    color: #262626;
+  }
+  
+  .option-radio {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid #f0f0f0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: white;
+  }
+  
+  .option-radio:hover {
+    border-color: #d9d9d9;
+    background: #fafafa;
+  }
+  
+  .option-radio.ant-radio-wrapper-checked {
+    border-color: #52c41a;
+    background: #f6ffed;
+  }
+  
+  .option-content {
+    margin-left: 8px;
+    padding: 4px 0;
+  }
+  
+  /* 操作按钮区域 */
+  .assessment-actions {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* 评估结果 */
+  .assessment-result {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .result-details {
+    margin-top: 24px;
+  }
+  
+  .score-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    padding: 20px;
+  }
+  
+  .score-info {
+    text-align: center;
+  }
+  
+  .category-score {
+    margin-bottom: 16px;
+  }
+  
+  .category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .recommendations {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .recommendations li {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    padding-left: 20px;
+  }
+  
+  .recommendations li:before {
+    content: '•';
+    color: #52c41a;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+  }
+  
+  .recommendations li:last-child {
+    border-bottom: none;
+  }
+  
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .assessment-container {
+      padding: 12px;
+    }
+    
+    .header-content {
+      flex-direction: column;
+      gap: 12px;
+      text-align: center;
+    }
+    
+    .time-info {
+      min-width: auto;
+      text-align: center;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .action-buttons > * {
+      width: 100%;
+    }
+    
+    .score-display {
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .intro-content {
+      padding: 20px;
+    }
+    
+    .assessment-info {
+      padding: 16px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .assessment-container {
+      padding: 8px;
+      gap: 12px;
+    }
+    
+    .question-card {
+      min-height: auto;
+    }
+    
+    .question-text {
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .option-radio {
+      padding: 12px;
+    }
+    
+    .option-content {
+      font-size: 14px;
+    }
+  }
+  
+  /* 动画效果 */
+  .assessment-container .ant-card {
+    animation: slideInUp 0.3s ease-out;
+  }
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* 时间警告样式 */
+  .time-warning {
+    color: #ff4d4f;
+    font-weight: 600;
+    animation: pulse 1s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+  
+  /* 进度条自定义样式 */
+  .ant-progress-circle .ant-progress-text {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  .ant-progress-line .ant-progress-bg {
+    background: linear-gradient(90deg, #52c41a, #73d13d);
+  }
+  
+  /* 标签样式 */
+  .ant-tag {
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  
+  /* 单选框组自定义 */
+  .ant-radio-group {
+    width: 100%;
+  }
+  
+  .ant-radio-wrapper {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0;
+  }
+  
+  /* 结果页面特殊样式 */
+  .ant-result .ant-result-icon {
+    margin-bottom: 24px;
+  }
+  
+  .ant-result .ant-result-title {
+    color: #262626;
+    font-weight: 600;
+  }
+  
+  .ant-result .ant-result-subtitle {
+    color: #666;
+    font-size: 16px;
+  }
+  
+  /* 卡片标题样式 */
+  .ant-card-head-title {
+    font-weight: 600;
+    color: #262626;
+  }
+  
+  /* 加载状态 */
+  .assessment-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+  }
+  
+  /* 成功状态 */
+  .assessment-success {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  
+  .assessment-success .ant-typography {
+    margin-bottom: 16px;
+  }
+  
+  /* 错误状态 */
+  .assessment-error {
+    text-align: center;
+    padding: 40px 20px;
+    color: #ff4d4f;
+  }

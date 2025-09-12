@@ -1,0 +1,74 @@
+# 环境变量配置指南
+
+## backend/.env 配置
+
+```env
+# 服务配置
+PORT=3001
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
+
+# 数据库配置
+MONGODB_URI=mongodb://localhost:27017/lingsu_ai
+REDIS_URL=redis://localhost:6379
+
+# 认证密钥（请修改为您自己的密钥）
+JWT_SECRET=your_super_secret_jwt_key_here_lingsu_ai_2024
+JWT_EXPIRE=7d
+
+# AI服务配置（可选，如果没有OpenAI API key可以先注释掉）
+# OPENAI_API_KEY=sk-your_openai_api_key_here
+AI_SERVICE_URL=http://localhost:8000
+
+# 邮件服务（可选）
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+
+# 调试模式
+DEBUG=lingsu:*
+```
+
+## frontend/.env 配置
+
+```env
+# API配置
+REACT_APP_API_URL=http://localhost:3001
+REACT_APP_SOCKET_URL=http://localhost:3001
+
+# 应用配置
+REACT_APP_VERSION=1.0.0
+REACT_APP_TITLE=灵枢AI - 中医智慧学习平台
+
+# 开发配置
+GENERATE_SOURCEMAP=true
+BROWSER=none
+```
+
+## 快速配置命令
+
+```bash
+# 创建backend/.env
+cat > backend/.env << 'EOF'
+PORT=3001
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
+MONGODB_URI=mongodb://localhost:27017/lingsu_ai
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=lingsu_ai_super_secret_key_2024_development
+JWT_EXPIRE=7d
+AI_SERVICE_URL=http://localhost:8000
+DEBUG=lingsu:*
+EOF
+
+# 创建frontend/.env
+cat > frontend/.env << 'EOF'
+REACT_APP_API_URL=http://localhost:3001
+REACT_APP_SOCKET_URL=http://localhost:3001
+REACT_APP_VERSION=1.0.0
+REACT_APP_TITLE=灵枢AI
+GENERATE_SOURCEMAP=true
+BROWSER=none
+EOF
+```

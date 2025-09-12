@@ -1,0 +1,548 @@
+/* 学习路径容器 */
+.learning-path-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  /* 路径概览 */
+  .path-overview {
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
+  }
+  
+  .overview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+  }
+  
+  .path-info {
+    flex: 1;
+  }
+  
+  .progress-circle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  /* 学习路径步骤 */
+  .path-steps {
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .step-title {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  .step-description {
+    margin-top: 8px;
+  }
+  
+  .step-description .ant-typography {
+    margin-bottom: 12px;
+  }
+  
+  /* 模块详情 */
+  .module-details {
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 学习内容列表 */
+  .topics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .topic-item {
+    padding: 16px;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: #fafafa;
+  }
+  
+  .topic-item:hover {
+    border-color: #52c41a;
+    background: #f6ffed;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(82, 196, 26, 0.1);
+  }
+  
+  .topic-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+  }
+  
+  /* 学习资源列表 */
+  .resources-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .resource-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: white;
+  }
+  
+  .resource-item:hover {
+    border-color: #1677ff;
+    box-shadow: 0 2px 8px rgba(22, 119, 255, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  .resource-icon {
+    font-size: 20px;
+    color: #1677ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #f0f9ff;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  
+  .resource-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .resource-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  
+  .resource-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  
+  /* 学习建议 */
+  .learning-suggestions {
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .learning-suggestions .ant-timeline-item-content {
+    margin-left: 16px;
+    padding-bottom: 20px;
+  }
+  
+  /* 学习统计 */
+  .learning-stats {
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 24px;
+    padding: 16px 0;
+  }
+  
+  .stat-item {
+    text-align: center;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  
+  .stat-item:hover {
+    background: #e6f7ff;
+    transform: translateY(-2px);
+  }
+  
+  .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1677ff;
+    margin-bottom: 4px;
+  }
+  
+  .stat-label {
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  /* 步骤组件自定义 */
+  .ant-steps-vertical .ant-steps-item-content {
+    padding-bottom: 24px;
+  }
+  
+  .ant-steps-vertical .ant-steps-item-description {
+    margin-top: 8px;
+  }
+  
+  .ant-steps-item-icon {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    border-radius: 50%;
+  }
+  
+  /* 进度条自定义 */
+  .ant-progress-circle .ant-progress-text {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  .ant-progress-line .ant-progress-bg {
+    background: linear-gradient(90deg, #52c41a, #73d13d);
+    border-radius: 100px;
+  }
+  
+  .ant-progress-inner {
+    border-radius: 100px;
+  }
+  
+  /* 标签自定义 */
+  .ant-tag {
+    border-radius: 12px;
+    font-size: 12px;
+    padding: 2px 8px;
+    border: none;
+    font-weight: 500;
+  }
+  
+  /* 折叠面板自定义 */
+  .ant-collapse {
+    border: none;
+    background: transparent;
+  }
+  
+  .ant-collapse-header {
+    font-weight: 600;
+    border-radius: 8px !important;
+    background: #f8f9fa;
+    border: 1px solid #f0f0f0 !important;
+    margin-bottom: 8px;
+  }
+  
+  .ant-collapse-header:hover {
+    background: #e6f7ff;
+    border-color: #91d5ff !important;
+  }
+  
+  .ant-collapse-content {
+    border: none;
+    background: transparent;
+  }
+  
+  .ant-collapse-content-box {
+    padding: 16px 0;
+  }
+  
+  /* 复选框自定义 */
+  .ant-checkbox-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    line-height: 1.5;
+  }
+  
+  .ant-checkbox {
+    margin-right: 12px;
+    margin-top: 2px;
+  }
+  
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: #52c41a;
+    border-color: #52c41a;
+  }
+  
+  /* 模态框自定义 */
+  .ant-modal-header {
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .ant-modal-content {
+    border-radius: 8px;
+  }
+  
+  /* 列表自定义 */
+  .ant-list-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .ant-list-item:last-child {
+    border-bottom: none;
+  }
+  
+  /* 时间线自定义 */
+  .ant-timeline-item-tail {
+    border-left: 2px solid #f0f0f0;
+  }
+  
+  .ant-timeline-item-head {
+    background: #52c41a;
+    border-color: #52c41a;
+  }
+  
+  .ant-timeline-item-content {
+    margin-left: 16px;
+    padding-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .learning-path-container {
+      padding: 12px;
+      gap: 16px;
+    }
+    
+    .overview-header {
+      flex-direction: column;
+      gap: 20px;
+      text-align: center;
+    }
+    
+    .path-info {
+      text-align: center;
+    }
+    
+    .resource-item {
+      flex-direction: column;
+      text-align: center;
+      gap: 12px;
+    }
+    
+    .resource-content {
+      text-align: center;
+    }
+    
+    .resource-header {
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .resource-meta {
+      justify-content: center;
+    }
+    
+    .topic-content {
+      text-align: left;
+    }
+    
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .step-description .ant-space {
+      flex-wrap: wrap;
+    }
+    
+    .step-description .ant-btn {
+      width: 100%;
+    }
+    
+    .overview-header {
+      gap: 16px;
+    }
+    
+    .learning-path-container {
+      padding: 8px;
+      gap: 12px;
+    }
+    
+    .topic-item {
+      padding: 12px;
+    }
+    
+    .resource-item {
+      padding: 12px;
+    }
+    
+    .stats-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    
+    .stat-item {
+      padding: 12px;
+    }
+    
+    .stat-value {
+      font-size: 20px;
+    }
+  }
+  
+  /* 动画效果 */
+  .learning-path-container .ant-card {
+    animation: slideInUp 0.3s ease-out;
+  }
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .topic-item {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  /* 完成状态样式 */
+  .topic-item.completed {
+    background: #f6ffed;
+    border-color: #b7eb8f;
+  }
+  
+  .resource-item.completed {
+    background: #f6ffed;
+    border-color: #b7eb8f;
+  }
+  
+  /* 锁定状态样式 */
+  .step-locked {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  
+  .step-locked .ant-steps-item-icon {
+    background: #f5f5f5;
+    border-color: #d9d9d9;
+    color: #bfbfbf;
+  }
+  
+  /* 激活状态样式 */
+  .step-active .ant-steps-item-icon {
+    background: #52c41a;
+    border-color: #52c41a;
+    color: white;
+  }
+  
+  /* 工具提示样式 */
+  .ant-tooltip-inner {
+    background: rgba(0, 0, 0, 0.85);
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  
+  /* 徽章样式 */
+  .ant-badge-count {
+    background: #52c41a;
+    border-radius: 10px;
+    font-size: 12px;
+    min-width: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+  
+  /* 卡片标题样式 */
+  .ant-card-head-title {
+    font-weight: 600;
+    color: #262626;
+    font-size: 16px;
+  }
+  
+  /* 按钮组自定义 */
+  .ant-space-item .ant-btn {
+    border-radius: 6px;
+    font-weight: 500;
+  }
+  
+  .ant-btn-primary {
+    background: linear-gradient(135deg, #52c41a, #73d13d);
+    border: none;
+    box-shadow: 0 2px 4px rgba(82, 196, 26, 0.3);
+  }
+  
+  .ant-btn-primary:hover {
+    background: linear-gradient(135deg, #73d13d, #95de64);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(82, 196, 26, 0.4);
+  }
+  
+  /* 加载状态 */
+  .loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: #999;
+  }
+  
+  /* 空状态 */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+  }
+  
+  .empty-state .anticon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #d9d9d9;
+  }
+  
+  /* 成功状态指示 */
+  .success-indicator {
+    color: #52c41a;
+    font-weight: 600;
+  }
+  
+  /* 警告状态指示 */
+  .warning-indicator {
+    color: #faad14;
+    font-weight: 600;
+  }
+  
+  /* 错误状态指示 */
+  .error-indicator {
+    color: #ff4d4f;
+    font-weight: 600;
+  }

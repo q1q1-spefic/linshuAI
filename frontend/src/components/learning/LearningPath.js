@@ -29,6 +29,7 @@ import {
   QuestionCircleOutlined,
   ExperimentOutlined
 } from '@ant-design/icons';
+import { useLanguage } from '../../hooks/useLanguage';
 import './LearningPath.css';
 
 const { Title, Paragraph, Text } = Typography;
@@ -588,7 +589,53 @@ const learningPaths = {
 };
 
 const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
-  const [currentPath, setCurrentPath] = useState(learningPaths[userLevel]);
+  const { t } = useLanguage();
+
+  // 获取多语言学习路径数据
+  const getLocalizedPath = (level) => {
+    const pathData = t(`learning.paths.${level}`) || {};
+    return {
+      title: pathData.title || '学习路径',
+      description: pathData.description || '系统学习计划',
+      duration: pathData.duration || '未知',
+      totalModules: pathData.modules?.length || 0,
+      modules: pathData.modules || []
+    };
+  };
+
+  // 获取多语言学习建议
+  const getLocalizedRecommendations = (level) => {
+    switch (level) {
+      case 'advanced':
+        return [
+          t('learning.assessment.recommendations.advanced.deepStudy'),
+          t('learning.assessment.recommendations.advanced.clinicalCases'),
+          t('learning.assessment.recommendations.advanced.complexAnalysis')
+        ];
+      case 'intermediate':
+        return [
+          t('learning.assessment.recommendations.intermediate.consolidate'),
+          t('learning.assessment.recommendations.intermediate.strengthen'),
+          t('learning.assessment.recommendations.intermediate.practice')
+        ];
+      case 'basic':
+        return [
+          t('learning.assessment.recommendations.basic.focusBasics'),
+          t('learning.assessment.recommendations.basic.systematicStudy'),
+          t('learning.assessment.recommendations.basic.readMaterials')
+        ];
+      case 'beginner':
+        return [
+          t('learning.assessment.recommendations.beginner.startPhilosophy'),
+          t('learning.assessment.recommendations.beginner.chooseBooks'),
+          t('learning.assessment.recommendations.beginner.watchVideos')
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const [currentPath, setCurrentPath] = useState(getLocalizedPath(userLevel));
   const [activeModule, setActiveModule] = useState(0);
   const [userProgress, setUserProgress] = useState({});
   const [expandedPanels, setExpandedPanels] = useState(['1']);
@@ -596,12 +643,10 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
   const [selectedResource, setSelectedResource] = useState(null);
 
   useEffect(() => {
-    if (userLevel && learningPaths[userLevel]) {
-      setCurrentPath(learningPaths[userLevel]);
-      // 加载用户进度
-      loadUserProgress();
-    }
-  }, [userLevel]);
+    setCurrentPath(getLocalizedPath(userLevel));
+    // 加载用户进度
+    loadUserProgress();
+  }, [userLevel, t]);
 
   // 加载用户进度
   const loadUserProgress = () => {
@@ -768,13 +813,13 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
             <Paragraph>{currentPath.description}</Paragraph>
             <Space>
               <Tag icon={<ClockCircleOutlined />} color="blue">
-                预计用时：{currentPath.duration}
+                {t('learning.path.estimatedTime')}: {currentPath.duration}
               </Tag>
               <Tag icon={<BookOutlined />} color="green">
-                {currentPath.modules.length} 个模块
+                {currentPath.modules.length} {t('learning.path.modules')}
               </Tag>
               <Tag icon={<TrophyOutlined />} color="gold">
-                {calculateOverallProgress()}% 完成
+                {calculateOverallProgress()}% {t('learning.path.completed')}
               </Tag>
             </Space>
           </div>
@@ -786,14 +831,14 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
               size={100}
             />
             <Text type="secondary" style={{ textAlign: 'center', marginTop: 8 }}>
-              总体进度
+              {t('learning.path.overallProgress')}
             </Text>
           </div>
         </div>
       </Card>
 
       {/* 学习路径步骤 */}
-      <Card title="学习路径" className="path-steps">
+      <Card title={t('learning.path.learningPath')} className="path-steps">
         <Steps
           direction="vertical"
           current={activeModule}
@@ -824,11 +869,11 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
                         {module.duration}
                       </Tag>
                       <Tag>
-                        预计 {module.estimatedHours} 小时
+                        {t('learning.path.estimatedHours').replace('{hours}', module.estimatedHours)}
                       </Tag>
                       {progress > 0 && (
                         <Tag icon={<TrophyOutlined />} color="gold">
-                          {progress}% 完成
+                          {progress}% {t('learning.path.completed')}
                         </Tag>
                       )}
                     </Space>
@@ -841,7 +886,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
                         onClick={() => startModule(index)}
                         icon={<PlayCircleOutlined />}
                       >
-                        {progress > 0 ? '继续学习' : '开始学习'}
+                        {progress > 0 ? t('learning.path.continueStudy') : t('learning.path.startStudy')}
                       </Button>
                     </div>
                   </div>
@@ -856,12 +901,12 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
 
       {/* 当前模块详情 */}
       {currentPath.modules[activeModule] && (
-        <Card title={`模块详情：${currentPath.modules[activeModule].title}`} className="module-details">
+        <Card title={`${t('learning.path.moduleDetails')}: ${currentPath.modules[activeModule].title}`} className="module-details">
           <Collapse 
             activeKey={expandedPanels}
             onChange={setExpandedPanels}
           >
-            <Panel header="学习目标" key="0">
+            <Panel header={t('learning.path.learningObjectives')} key="0">
               <List
                 dataSource={currentPath.modules[activeModule].learningObjectives || []}
                 renderItem={(objective, index) => (
@@ -875,7 +920,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
               />
             </Panel>
 
-            <Panel header="学习内容" key="1">
+            <Panel header={t('learning.path.learningContent')} key="1">
               {currentPath.modules[activeModule].topics && (
                 <div className="topics-list">
                   {currentPath.modules[activeModule].topics.map((topic, index) => (
@@ -906,7 +951,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
               )}
             </Panel>
             
-            <Panel header="学习资源" key="2">
+            <Panel header={t('learning.path.learningResources')} key="2">
               {currentPath.modules[activeModule].resources && (
                 <div className="resources-list">
                   {currentPath.modules[activeModule].resources.map((resource, index) => (
@@ -923,11 +968,11 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
                           />
                         </div>
                         <div className="resource-meta">
-                          {resource.duration && <Text type="secondary">时长：{resource.duration}</Text>}
-                          {resource.pages && <Text type="secondary">页数：{resource.pages}</Text>}
-                          {resource.questions && <Text type="secondary">题数：{resource.questions}</Text>}
-                          {resource.exercises && <Text type="secondary">练习：{resource.exercises}</Text>}
-                          {resource.cases && <Text type="secondary">案例：{resource.cases}</Text>}
+                          {resource.duration && <Text type="secondary">{t('learning.path.duration')}: {resource.duration}</Text>}
+                          {resource.pages && <Text type="secondary">{t('learning.path.pages')}: {resource.pages}</Text>}
+                          {resource.questions && <Text type="secondary">{t('learning.path.questions')}: {resource.questions}</Text>}
+                          {resource.exercises && <Text type="secondary">{t('learning.path.exercises')}: {resource.exercises}</Text>}
+                          {resource.cases && <Text type="secondary">{t('learning.path.cases')}: {resource.cases}</Text>}
                         </div>
                       </div>
                       <Button 
@@ -935,7 +980,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
                         type="link"
                         onClick={() => viewResource(resource)}
                       >
-                        查看详情
+                        {t('learning.path.viewDetails')}
                       </Button>
                     </div>
                   ))}
@@ -945,7 +990,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
 
             {currentPath.modules[activeModule].prerequisites && 
              currentPath.modules[activeModule].prerequisites.length > 0 && (
-              <Panel header="前置要求" key="3">
+              <Panel header={t('learning.path.prerequisites')} key="3">
                 <Space wrap>
                   {currentPath.modules[activeModule].prerequisites.map((prereq, index) => (
                     <Tag key={index} color="blue">{prereq}</Tag>
@@ -959,9 +1004,9 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
 
       {/* 学习建议 */}
       {assessmentResult && (
-        <Card title="个性化建议" className="learning-suggestions">
+        <Card title={t('learning.path.personalizedSuggestions')} className="learning-suggestions">
           <Timeline>
-            {assessmentResult.recommendations.map((recommendation, index) => (
+            {getLocalizedRecommendations(assessmentResult.level).map((recommendation, index) => (
               <Timeline.Item
                 key={index}
                 dot={<StarOutlined style={{ fontSize: '16px' }} />}
@@ -974,11 +1019,11 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
       )}
 
       {/* 学习统计 */}
-      <Card title="学习统计" className="learning-stats">
+      <Card title={t('learning.path.learningStatistics')} className="learning-stats">
         <div className="stats-grid">
           <div className="stat-item">
             <div className="stat-value">{calculateOverallProgress()}%</div>
-            <div className="stat-label">总体进度</div>
+            <div className="stat-label">{t('learning.path.overallProgress')}</div>
           </div>
           <div className="stat-item">
             <div className="stat-value">
@@ -986,7 +1031,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
                 sum + (module.topics ? module.topics.filter(t => t.completed).length : 0), 0
               )}
             </div>
-            <div className="stat-label">已完成话题</div>
+            <div className="stat-label">{t('learning.path.completedTopics')}</div>
           </div>
           <div className="stat-item">
             <div className="stat-value">
@@ -994,7 +1039,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
                 sum + (module.resources ? module.resources.filter(r => r.completed).length : 0), 0
               )}
             </div>
-            <div className="stat-label">已完成资源</div>
+            <div className="stat-label">{t('learning.path.completedResources')}</div>
           </div>
           <div className="stat-item">
             <div className="stat-value">
@@ -1002,7 +1047,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
                 sum + (module.estimatedHours || 0), 0
               )}h
             </div>
-            <div className="stat-label">总学习时长</div>
+            <div className="stat-label">{t('learning.path.totalStudyTime')}</div>
           </div>
         </div>
       </Card>
@@ -1014,10 +1059,10 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
         onCancel={() => setModalVisible(false)}
         footer={[
           <Button key="close" onClick={() => setModalVisible(false)}>
-            关闭
+            {t('common.cancel')}
           </Button>,
           <Button key="start" type="primary">
-            开始学习
+            {t('learning.path.startStudy')}
           </Button>
         ]}
       >
@@ -1025,54 +1070,53 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
           <div>
             <Space direction="vertical" style={{ width: '100%' }}>
               <div>
-                <Text strong>资源类型：</Text>
+                <Text strong>{t('learning.path.resourceType')}:</Text>
                 <Tag style={{ marginLeft: 8 }}>
                   {getResourceIcon(selectedResource.type)}
                   <span style={{ marginLeft: 4 }}>
-                    {selectedResource.type === 'video' && '视频课程'}
-                    {selectedResource.type === 'text' && '文本资料'}
-                    {selectedResource.type === 'quiz' && '在线测试'}
-                    {selectedResource.type === 'practice' && '练习题'}
-                    {selectedResource.type === 'case' && '案例分析'}
-                    {selectedResource.type === 'interactive' && '交互练习'}
-                    {selectedResource.type === 'simulation' && '模拟训练'}
+                    {selectedResource.type === 'video' && t('learning.path.resourceTypes.video')}
+                    {selectedResource.type === 'text' && t('learning.path.resourceTypes.text')}
+                    {selectedResource.type === 'quiz' && t('learning.path.resourceTypes.quiz')}
+                    {selectedResource.type === 'practice' && t('learning.path.resourceTypes.practice')}
+                    {selectedResource.type === 'case' && t('learning.path.resourceTypes.case')}
+                    {selectedResource.type === 'interactive' && t('learning.path.resourceTypes.interactive')}
+                    {selectedResource.type === 'simulation' && t('learning.path.resourceTypes.simulation')}
                   </span>
                 </Tag>
               </div>
               
               {selectedResource.duration && (
                 <div>
-                  <Text strong>学习时长：</Text>
+                  <Text strong>{t('learning.path.duration')}:</Text>
                   <Text>{selectedResource.duration}</Text>
                 </div>
               )}
               
               {selectedResource.pages && (
                 <div>
-                  <Text strong>页数：</Text>
+                  <Text strong>{t('learning.path.pages')}:</Text>
                   <Text>{selectedResource.pages}</Text>
                 </div>
               )}
               
               {selectedResource.questions && (
                 <div>
-                  <Text strong>题目数量：</Text>
-                  <Text>{selectedResource.questions} 题</Text>
+                  <Text strong>{t('learning.path.questionCount')}:</Text>
+                  <Text>{selectedResource.questions} {t('learning.path.questions')}</Text>
                 </div>
               )}
               
               <div>
-                <Text strong>学习状态：</Text>
+                <Text strong>{t('learning.path.studyStatus')}:</Text>
                 <Tag color={selectedResource.completed ? 'green' : 'orange'}>
-                  {selectedResource.completed ? '已完成' : '未完成'}
+                  {selectedResource.completed ? t('learning.path.completed') : t('learning.path.notCompleted')}
                 </Tag>
               </div>
               
               <Divider />
               
               <Paragraph>
-                这是一个重要的学习资源，建议您认真学习。完成后请记得标记为已完成，
-                以便系统跟踪您的学习进度。
+                {t('learning.path.resourceDescription')}
               </Paragraph>
             </Space>
           </div>

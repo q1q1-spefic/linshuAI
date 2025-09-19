@@ -8,11 +8,11 @@
     gap: 24px;
   }
   
-  /* 路径概览 */
+  /* 路径概览 - 水墨风格 */
   .path-overview {
     border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    background: linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%);
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.1);
+    background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f4 100%);
   }
   
   .overview-header {
@@ -76,10 +76,10 @@
   }
   
   .topic-item:hover {
-    border-color: #52c41a;
-    background: #f6ffed;
+    border-color: #2c3e50;
+    background: #f8f9fa;
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(82, 196, 26, 0.1);
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.1);
   }
   
   .topic-content {
@@ -108,20 +108,20 @@
   }
   
   .resource-item:hover {
-    border-color: #1677ff;
-    box-shadow: 0 2px 8px rgba(22, 119, 255, 0.1);
+    border-color: #5d6d7e;
+    box-shadow: 0 2px 8px rgba(93, 109, 126, 0.1);
     transform: translateY(-1px);
   }
   
   .resource-icon {
     font-size: 20px;
-    color: #1677ff;
+    color: #2c3e50;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: #f0f9ff;
+    background: #f1f3f4;
     border-radius: 8px;
     flex-shrink: 0;
   }
@@ -179,14 +179,14 @@
   }
   
   .stat-item:hover {
-    background: #e6f7ff;
+    background: #f1f3f4;
     transform: translateY(-2px);
   }
   
   .stat-value {
     font-size: 24px;
     font-weight: 700;
-    color: #1677ff;
+    color: #2c3e50;
     margin-bottom: 4px;
   }
   
@@ -220,7 +220,7 @@
   }
   
   .ant-progress-line .ant-progress-bg {
-    background: linear-gradient(90deg, #52c41a, #73d13d);
+    background: linear-gradient(90deg, #2c3e50, #34495e);
     border-radius: 100px;
   }
   
@@ -252,8 +252,8 @@
   }
   
   .ant-collapse-header:hover {
-    background: #e6f7ff;
-    border-color: #91d5ff !important;
+    background: #f1f3f4;
+    border-color: #85929e !important;
   }
   
   .ant-collapse-content {
@@ -279,8 +279,8 @@
   }
   
   .ant-checkbox-checked .ant-checkbox-inner {
-    background-color: #52c41a;
-    border-color: #52c41a;
+    background-color: #2c3e50;
+    border-color: #2c3e50;
   }
   
   /* 模态框自定义 */

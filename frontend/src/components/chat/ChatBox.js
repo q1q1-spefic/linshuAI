@@ -1,32 +1,34 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Input, 
-  Button, 
-  Card, 
-  Typography, 
-  Space, 
-  Avatar, 
-  Spin, 
-  message, 
+import {
+  Input,
+  Button,
+  Card,
+  Typography,
+  Space,
+  Avatar,
+  Spin,
+  message,
   Badge,
   Tooltip,
   Divider
 } from 'antd';
-import { 
-  SendOutlined, 
-  UserOutlined, 
+import {
+  SendOutlined,
+  UserOutlined,
   RobotOutlined,
   ThunderboltOutlined,
   BookOutlined,
   ClockCircleOutlined
 } from '@ant-design/icons';
 import { chatService } from '../../services/chatService';
+import { useLanguage } from '../../hooks/useLanguage';
 import './ChatBox.css';
 
 const { TextArea } = Input;
 const { Text, Paragraph } = Typography;
 
 const ChatBox = () => {
+  const { t, isEn } = useLanguage();
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -44,21 +46,11 @@ const ChatBox = () => {
     scrollToBottom();
   }, [messages]);
 
-  // 加载快速问题
+  // 从语言包获取快速问题
   useEffect(() => {
-    const loadQuickQuestions = async () => {
-      try {
-        const response = await chatService.getQuickQuestions();
-        if (response.success) {
-          setQuickQuestions(response.data.questions);
-        }
-      } catch (error) {
-        console.error('加载快速问题失败:', error);
-      }
-    };
-
-    loadQuickQuestions();
-  }, []);
+    const questions = t('chat.quickQuestions') || [];
+    setQuickQuestions(questions);
+  }, [t]);
 
   // 发送消息
   const handleSendMessage = async (text = inputValue) => {
@@ -88,16 +80,16 @@ const ChatBox = () => {
           setConversationId(response.data.conversationId);
         }
       } else {
-        throw new Error(response.error || '发送失败');
+        throw new Error(response.error || t('chat.error.sendFailed'));
       }
     } catch (error) {
       console.error('发送消息失败:', error);
-      message.error('发送失败，请重试');
+      message.error(t('chat.error.sendFailed'));
       
       // 添加错误消息
       const errorMessage = {
         role: 'assistant',
-        content: '抱歉，我暂时无法回应您的消息。请稍后重试。',
+        content: t('chat.error.noResponse'),
         timestamp: new Date().toISOString(),
         metadata: { error: true }
       };
@@ -148,22 +140,26 @@ const ChatBox = () => {
         className={`message-container ${isUser ? 'user-message' : 'assistant-message'}`}
       >
         <div className="message-wrapper">
-          <Avatar 
-            size="small" 
-            icon={isUser ? <UserOutlined /> : <RobotOutlined />}
-            style={{ 
-              backgroundColor: isUser ? '#52c41a' : '#1677ff',
+          <Avatar
+            size="small"
+            icon={isUser ? <UserOutlined /> : undefined}
+            style={{
+              backgroundColor: isUser ? '#2c3e50' : '#2c3e50',
               marginRight: isUser ? 0 : 8,
-              marginLeft: isUser ? 8 : 0
+              marginLeft: isUser ? 8 : 0,
+              color: '#ffffff',
+              fontSize: isUser ? undefined : '12px'
             }}
-          />
+          >
+            {isUser ? undefined : (isEn ? 'L' : '灵')}
+          </Avatar>
           
           <div className={`message-bubble ${isUser ? 'user' : 'assistant'}`}>
             {isError && (
               <div className="message-error-indicator">
                 <ThunderboltOutlined style={{ color: '#ff4d4f' }} />
                 <Text type="secondary" style={{ fontSize: '12px', marginLeft: '4px' }}>
-                  服务异常
+                  {t('chat.error.service')}
                 </Text>
               </div>
             )}
@@ -172,7 +168,7 @@ const ChatBox = () => {
               <div className="message-fallback-indicator">
                 <BookOutlined style={{ color: '#faad14' }} />
                 <Text type="secondary" style={{ fontSize: '12px', marginLeft: '4px' }}>
-                  离线模式
+                  {t('chat.error.offline')}
                 </Text>
               </div>
             )}
@@ -207,14 +203,14 @@ const ChatBox = () => {
               <div className="related-concepts">
                 <Divider style={{ margin: '8px 0' }} />
                 <Text type="secondary" style={{ fontSize: '12px' }}>
-                  相关概念：
+                  {t('chat.relatedConcepts')}
                 </Text>
                 <div style={{ marginTop: '4px' }}>
                   {msg.metadata.relatedConcepts.slice(0, 3).map((concept, i) => (
                     <span 
                       key={i}
                       className="concept-tag"
-                      onClick={() => handleSendMessage(`请详细解释一下${concept}`)}
+                      onClick={() => handleSendMessage(isEn ? `Please explain ${concept} in detail` : `请详细解释一下${concept}`)}
                     >
                       {concept}
                     </span>
@@ -236,31 +232,30 @@ const ChatBox = () => {
           // 欢迎界面
           <div className="welcome-container">
             <div className="welcome-avatar">
-              <Avatar 
-                size={80} 
-                style={{ 
-                  background: 'linear-gradient(135deg, #52c41a, #73d13d)',
+              <Avatar
+                size={80}
+                style={{
+                  background: 'linear-gradient(135deg, #2c3e50, #34495e)',
                   fontSize: '24px'
                 }}
               >
-                灵
+                {isEn ? 'L' : '灵'}
               </Avatar>
             </div>
             
             <Typography.Title level={3} style={{ marginTop: '16px' }}>
-              您好！我是您的中医学习伙伴
+              {t('chat.welcome')}
             </Typography.Title>
             
             <Paragraph style={{ color: '#666', textAlign: 'center', maxWidth: '400px' }}>
-              我可以帮您解答中医理论、经典条文、临床应用等各方面的问题。
-              请问您想了解什么？
+              {t('chat.welcomeDesc')}
             </Paragraph>
             
             {/* 快速问题 */}
             {quickQuestions.length > 0 && (
               <div className="quick-questions">
                 <Text strong style={{ display: 'block', marginBottom: '12px' }}>
-                  您可以试试这些问题：
+                  {t('chat.tryQuestions')}
                 </Text>
                 <Space direction="vertical" style={{ width: '100%' }}>
                   {quickQuestions.slice(0, 4).map((question, index) => (
@@ -284,14 +279,20 @@ const ChatBox = () => {
             {messages.map((msg, index) => renderMessage(msg, index))}
             {isLoading && (
               <div className="loading-message">
-                <Avatar 
-                  size="small" 
-                  icon={<RobotOutlined />}
-                  style={{ backgroundColor: '#1677ff', marginRight: '8px' }}
-                />
+                <Avatar
+                  size="small"
+                  style={{
+                    backgroundColor: '#2c3e50',
+                    marginRight: '8px',
+                    color: '#ffffff',
+                    fontSize: '12px'
+                  }}
+                >
+                  {isEn ? 'L' : '灵'}
+                </Avatar>
                 <div className="message-bubble assistant">
                   <Spin size="small" />
-                  <span style={{ marginLeft: '8px' }}>正在思考...</span>
+                  <span style={{ marginLeft: '8px' }}>{t('chat.thinking')}</span>
                 </div>
               </div>
             )}
@@ -308,7 +309,7 @@ const ChatBox = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onPressEnter={handleKeyPress}
-            placeholder="请输入您的中医问题..."
+            placeholder={t('chat.placeholder')}
             autoSize={{ minRows: 1, maxRows: 4 }}
             style={{ 
               resize: 'none',
@@ -331,7 +332,7 @@ const ChatBox = () => {
         
         <div className="input-hint">
           <Text type="secondary" style={{ fontSize: '12px' }}>
-            按 Enter 发送，Shift + Enter 换行
+            {t('chat.sendHint')}
           </Text>
         </div>
       </div>

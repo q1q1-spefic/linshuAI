@@ -147,30 +147,30 @@ function generateTCMResponse(message) {
       conversationId: generateId(),
       message: {
         role: 'assistant',
-        content: `感谢您的问题："${message}"
+        content: `Thank you for your question: "${message}"
 
-这是一个很有价值的中医问题。虽然我目前还在学习中，但我可以为您提供一些基本的指导：
+This is a valuable Traditional Chinese Medicine question. While I am still learning, I can provide you with some basic guidance:
 
-**建议您：**
-1. 查阅相关中医经典文献（如《黄帝内经》、《伤寒论》等）
-2. 参考权威的中医教材和专业书籍
-3. 咨询有经验的中医师进行深入探讨
+**I suggest you:**
+1. Consult relevant TCM classical literature (such as "Huangdi Neijing", "Treatise on Cold Damage", etc.)
+2. Reference authoritative TCM textbooks and professional books
+3. Consult experienced TCM practitioners for in-depth discussion
 
-**如果您想了解特定内容，可以尝试问我：**
-- 中医基础理论（如肝主疏泄、脾主运化等）
-- 经典方剂（如麻黄汤、桂枝汤等）
-- 诊断方法（如四诊合参、辨证论治等）
+**If you want to learn about specific content, you can try asking me:**
+- TCM Basic Theory (such as Liver governs free flow of Qi, Spleen governs transportation and transformation, etc.)
+- Classical Formulas (such as Ephedra Decoction, Cinnamon Twig Decoction, etc.)
+- Diagnostic Methods (such as four diagnostic methods, pattern differentiation and treatment, etc.)
 
-我会持续学习，为您提供更准确的解答。`,
+I will continue learning to provide you with more accurate answers.`,
         timestamp: new Date().toISOString(),
         metadata: {
           confidence: 0.6,
           sources: [],
-          relatedConcepts: ['中医理论', '辨证论治', '方剂学'],
+          relatedConcepts: ['TCM Theory', 'Pattern Differentiation and Treatment', 'Formula Studies'],
           model: 'general-tcm'
         }
       },
-      relatedConcepts: ['中医理论', '辨证论治', '方剂学'],
+      relatedConcepts: ['TCM Theory', 'Pattern Differentiation and Treatment', 'Formula Studies'],
       sources: [],
       confidence: 0.6
     }

@@ -174,11 +174,13 @@ const ChatBox = () => {
             )}
             
             <div className="message-content">
-              {msg.content.split('\n').map((line, i) => (
-                <div key={i}>
-                  {line}
-                  {i < msg.content.split('\n').length - 1 && <br />}
-                </div>
+              {(msg.content || (isEn ? msg.en?.content : msg.zh?.content) || '')
+                .split('\n')
+                .map((line, i, arr) => (
+                  <div key={i}>
+                    {line}
+                    {i < arr.length-1 && <br />}
+                  </div>
               ))}
             </div>
             

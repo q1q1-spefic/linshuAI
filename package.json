@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-        "dev:frontend": "cd frontend && npm start",
+        "dev:frontend": "cd frontend && CHOKIDAR_USEPOLLING=true WATCHPACK_POLLING=true WATCHPACK_IGNORE=node_modules npm start",
         "dev:backend": "cd backend && npm run dev",
         "build": "npm run build:frontend && npm run build:backend",
         "build:frontend": "cd frontend && npm run build",

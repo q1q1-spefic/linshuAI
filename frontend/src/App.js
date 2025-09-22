@@ -1,48 +1,104 @@
 import React, { useState, useEffect } from 'react';
-import { ConfigProvider, Layout, Card, Row, Col, Button, Typography, Space, Badge, Input } from 'antd';
-import { 
-  MessageOutlined, 
-  ShareAltOutlined, 
+import { ConfigProvider, Layout, Card, Row, Col, Button, Typography, Space, Badge, Dropdown, Modal, Form, Input, message } from 'antd';
+import {
+  MessageOutlined,
+  ShareAltOutlined,
   BookOutlined,
   RocketOutlined,
-  UserOutlined,
   SettingOutlined,
-  SendOutlined,
-  HomeOutlined
+  HomeOutlined,
+  GlobalOutlined,
+  UserOutlined,
+  LockOutlined
 } from '@ant-design/icons';
 import zhCN from 'antd/locale/zh_CN';
+import enUS from 'antd/locale/en_US';
 import axios from 'axios';
 import ChatBox from './components/chat/ChatBox';
 import KnowledgeGraph from './components/knowledge-graph/KnowledgeGraph';
 import LearningMain from './components/learning/LearningMain';
+import { LanguageProvider, useLanguage } from './hooks/useLanguage';
 import './App.css';
 
-const { Header, Content } = Layout;
+const { Header } = Layout;
 const { Title, Paragraph } = Typography;
 
-// 主题配置 - 参考设计稿的配色
-const theme = {
+// 获取主题配置 - 根据语言调整字体
+const getTheme = (isEn) => ({
   token: {
-    colorPrimary: '#52c41a',
-    colorSuccess: '#52c41a',
-    borderRadius: 12,
+    colorPrimary: '#2c3e50',        // 深青墨
+    colorSuccess: '#16a085',        // 翡翠绿
+    colorInfo: '#5d6d7e',           // 淡墨灰
+    colorWarning: '#d68910',        // 琴柏黄
+    colorError: '#cb4335',          // 朱砂红
+    colorBgLayout: '#f8f9fa',       // 米白
+    colorBgContainer: '#ffffff',    // 纯白
+    colorText: '#212529',           // 墨黑
+    colorTextSecondary: '#5d6d7e',  // 淡墨
+    borderRadius: 6,
     fontSize: 14,
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif'
+    fontFamily: isEn
+      ? '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", -apple-system, BlinkMacSystemFont, sans-serif'
+      : '"SimSun", "宋体", "STSong", serif'
+  },
+  components: {
+    Layout: {
+      colorBgHeader: '#f8f9fa',
+      colorBgBody: '#f8f9fa'
+    },
+    Card: {
+      colorBgContainer: '#ffffff',
+      boxShadow: '0 2px 12px rgba(44, 62, 80, 0.08)'
+    },
+    Button: {
+      colorPrimary: '#2c3e50',
+      colorPrimaryHover: '#34495e',
+      colorPrimaryActive: '#1b2631'
+    },
+    Typography: {
+      fontFamily: isEn
+        ? '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", -apple-system, BlinkMacSystemFont, sans-serif'
+        : '"SimSun", "宋体", "STSong", serif'
+    }
   }
-};
+});
 
-// 快速问题数据
-const quickQuestions = [
-  "请解释肝主疏泄的含义",
-  "麻黄汤和桂枝汤的区别",
-  "什么是天人相应理论",
-  "脾胃虚弱的症状表现"
-];
+// 快速问题数据现在从语言包获取
 
-function App() {
+// 主应用组件内容
+const AppContent = () => {
+  const { t, currentLanguage, changeLanguage, isEn } = useLanguage();
   const [currentView, setCurrentView] = useState('home');
   const [backendStatus, setBackendStatus] = useState('checking');
   const [backendInfo, setBackendInfo] = useState(null);
+  const [loginModalVisible, setLoginModalVisible] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+  const [loginForm] = Form.useForm();
+
+  // 语言切换菜单
+  const languageMenuItems = [
+    {
+      key: 'zh',
+      label: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span>🇨🇳</span>
+          <span>中文</span>
+        </div>
+      ),
+      onClick: () => changeLanguage('zh')
+    },
+    {
+      key: 'en',
+      label: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span>🇺🇸</span>
+          <span>English</span>
+        </div>
+      ),
+      onClick: () => changeLanguage('en')
+    }
+  ];
 
   // 检查后端连接状态
   useEffect(() => {
@@ -56,22 +112,94 @@ function App() {
         setBackendStatus('disconnected');
       }
     };
-    
+
     checkBackend();
     const interval = setInterval(checkBackend, 30000); // 每30秒检查一次
     return () => clearInterval(interval);
   }, []);
 
+  // 检查登录状态
+  useEffect(() => {
+    const savedUser = localStorage.getItem('lingshui_user');
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        setIsLoggedIn(true);
+        setUserInfo(userData);
+      } catch (error) {
+        localStorage.removeItem('lingshui_user');
+      }
+    }
+  }, []);
+
+  // 登录处理
+  const handleLogin = async (values) => {
+    try {
+      // 这里可以调用实际的登录API
+      // const response = await axios.post('http://localhost:3001/api/auth/login', values);
+
+      // 模拟登录成功
+      const mockUser = {
+        id: 1,
+        username: values.username,
+        email: values.email || `${values.username}@example.com`,
+        avatar: null,
+        loginTime: new Date().toISOString()
+      };
+
+      setIsLoggedIn(true);
+      setUserInfo(mockUser);
+      localStorage.setItem('lingshui_user', JSON.stringify(mockUser));
+      setLoginModalVisible(false);
+      loginForm.resetFields();
+
+      message.success(t('auth.loginSuccess') || '登录成功！');
+    } catch (error) {
+      message.error(t('auth.loginFailed') || '登录失败，请重试');
+    }
+  };
+
+  // 登出处理
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserInfo(null);
+    localStorage.removeItem('lingshui_user');
+    message.success(t('auth.logoutSuccess') || '已退出登录');
+  };
+
+  // 用户菜单项
+  const userMenuItems = [
+    {
+      key: 'profile',
+      label: t('auth.profile') || '个人资料',
+      icon: <UserOutlined />,
+    },
+    {
+      key: 'settings',
+      label: t('auth.settings') || '设置',
+      icon: <SettingOutlined />,
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: 'logout',
+      label: t('auth.logout') || '退出登录',
+      onClick: handleLogout,
+    },
+  ];
+
   // 顶部导航栏组件
   const TopHeader = () => (
     <Header style={{ 
-      background: '#fff', 
-      borderBottom: '1px solid #f0f0f0',
+      background: '#f8f9fa', 
+      borderBottom: '1px solid #d5d8dc',
       padding: '0 24px',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      height: '64px'
+      height: '64px',
+      boxShadow: '0 1px 6px rgba(44, 62, 80, 0.1)'
     }}>
       <div 
         style={{ 
@@ -83,116 +211,170 @@ function App() {
         onClick={() => setCurrentView('home')}
         >
         <div style={{
-            width: '32px',
-            height: '32px',
-            background: 'linear-gradient(135deg, #52c41a, #73d13d)',
+            width: '36px',
+            height: '36px',
+            background: 'linear-gradient(135deg, #2c3e50, #34495e)',
             borderRadius: '8px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'white',
-            fontSize: '16px',
-            fontWeight: 'bold'
+            color: '#ffffff',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            border: 'none',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
         }}>
-            灵
+            {isEn ? 'L' : '灵'}
         </div>
-        <span style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a1a' }}>
-            灵枢AI
+        <span style={{
+            fontSize: '22px',
+            fontWeight: isEn ? '600' : '500',
+            color: '#212529',
+            fontFamily: isEn
+              ? '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", -apple-system, BlinkMacSystemFont, sans-serif'
+              : '"SimSun", "宋体", "STSong", serif',
+            letterSpacing: isEn ? '0.5px' : '1px'
+        }}>
+            {isEn ? 'LingShu AI' : '灵枢AI'}
         </span>
         </div>
       
       <Space>
-        <Button 
+        <Button
             type={currentView === 'home' ? 'primary' : 'text'}
             icon={<HomeOutlined />}
             onClick={() => setCurrentView('home')}
         >
-            首页
+            {t('nav.home')}
         </Button>
-        <Button 
+        <Button
             type={currentView === 'chat' ? 'primary' : 'text'}
             icon={<MessageOutlined />}
             onClick={() => setCurrentView('chat')}
         >
-            开始对话
+            {t('nav.chat')}
         </Button>
-        <Button 
+        <Button
           type={currentView === 'graph' ? 'primary' : 'text'}
           icon={<ShareAltOutlined />}
           onClick={() => setCurrentView('graph')}
         >
-          知识图谱
+          {t('nav.graph')}
         </Button>
-        <Button 
+        <Button
           type={currentView === 'learning' ? 'primary' : 'text'}
           icon={<BookOutlined />}
           onClick={() => setCurrentView('learning')}
         >
-          学习路径
+          {t('nav.learning')}
         </Button>
+        <Dropdown
+          menu={{ items: languageMenuItems }}
+          placement="bottomRight"
+          trigger={['click']}
+        >
+          <Button type="text" icon={<GlobalOutlined />}>
+            {currentLanguage === 'zh' ? '🇨🇳' : '🇺🇸'}
+          </Button>
+        </Dropdown>
         <Button type="text" icon={<SettingOutlined />} />
-        <Button type="primary">登录</Button>
+        {isLoggedIn ? (
+          <Dropdown
+            menu={{ items: userMenuItems }}
+            placement="bottomRight"
+            trigger={['click']}
+          >
+            <Button type="text" style={{ padding: '0 8px' }}>
+              <Space>
+                <UserOutlined />
+                <span>{userInfo?.username || 'User'}</span>
+              </Space>
+            </Button>
+          </Dropdown>
+        ) : (
+          <Button type="primary" onClick={() => setLoginModalVisible(true)}>
+            {t('nav.login')}
+          </Button>
+        )}
       </Space>
     </Header>
   );
 
   // 首页内容
   const HomePage = () => (
-    <div style={{ background: '#fff' }}>
-      {/* Hero Section - 参考设计稿的主标题区域 */}
+    <div style={{ background: '#f8f9fa' }}>
+      {/* Hero Section - 水墨风格主标题区域 */}
       <div style={{
         textAlign: 'center',
         padding: '80px 24px 60px',
-        background: 'linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%)'
+        background: 'linear-gradient(135deg, #ffffff 0%, #f1f3f4 100%)',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        <Title level={1} style={{ 
-          fontSize: '3rem', 
-          fontWeight: '700',
-          marginBottom: '24px',
-          background: 'linear-gradient(135deg, #52c41a, #1677ff)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent'
-        }}>
-          中医智慧的 AI 学习伙伴
+        <Title
+          level={1}
+          className={isEn ? 'home-title-en' : ''}
+          style={{
+            fontSize: '3rem',
+            fontWeight: '400',
+            marginBottom: '24px',
+            color: '#212529',
+            fontFamily: isEn
+              ? '"Cambria", "Times New Roman", serif'
+              : '"SimSun", "宋体", "STSong", serif',
+            letterSpacing: '2px'
+          }}
+        >
+          {t('home.title')}
         </Title>
-        <Paragraph style={{ 
-          fontSize: '1.2rem', 
-          color: '#666',
+        <Paragraph style={{
+          fontSize: '1.2rem',
+          color: isEn ? '#6c757d' : '#212529',
+          fontWeight: isEn ? '500' : '400',
           marginBottom: '40px',
           maxWidth: '800px',
-          margin: '0 auto 40px'
+          margin: '0 auto 40px',
+          lineHeight: '1.8',
+          fontFamily: isEn
+            ? '"Cambria", "Times New Roman", serif'
+            : '"SimSun", "宋体", "STSong", serif'
         }}>
-          探索传统中医的深度智慧，通过AI驱动的知识图谱、智能问答和个性化学习路径，
-          让古老的医学经典焕发现代活力
+          {t('home.subtitle')}
         </Paragraph>
         
         <Space size="large">
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             size="large"
             icon={<RocketOutlined />}
             onClick={() => setCurrentView('chat')}
-            style={{ 
-              height: '48px', 
+            style={{
+              height: '48px',
               padding: '0 32px',
               fontSize: '16px',
-              borderRadius: '24px'
+              borderRadius: '4px',
+              fontFamily: isEn
+                ? '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", -apple-system, BlinkMacSystemFont, sans-serif'
+                : '"SimSun", "宋体", "STSong", serif'
             }}
           >
-            开始探索
+            {t('home.startExploring')}
           </Button>
-          <Button 
+          <Button
             size="large"
             icon={<BookOutlined />}
             onClick={() => setCurrentView('learning')}
-            style={{ 
-              height: '48px', 
+            style={{
+              height: '48px',
               padding: '0 32px',
               fontSize: '16px',
-              borderRadius: '24px'
+              borderRadius: '4px',
+              fontFamily: isEn
+                ? '"Inter", "Segoe UI", "Roboto", "Helvetica Neue", -apple-system, BlinkMacSystemFont, sans-serif'
+                : '"SimSun", "宋体", "STSong", serif'
             }}
           >
-            学习路径
+            {t('home.learningPath')}
           </Button>
         </Space>
       </div>
@@ -200,7 +382,7 @@ function App() {
       {/* 核心功能区域 - 参考设计稿的卡片布局 */}
       <div style={{ padding: '60px 24px', maxWidth: '1200px', margin: '0 auto' }}>
         <Title level={2} style={{ textAlign: 'center', marginBottom: '60px' }}>
-          核心功能
+          {t('home.coreFeatures')}
         </Title>
         
         <Row gutter={[32, 32]}>
@@ -209,28 +391,29 @@ function App() {
               hoverable
               style={{ 
                 height: '100%', 
-                borderRadius: '16px',
-                border: '1px solid #f0f0f0'
+                borderRadius: '8px',
+                border: '1px solid #e8e8e8',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)'
               }}
               bodyStyle={{ padding: '32px 24px', textAlign: 'center' }}
               onClick={() => setCurrentView('chat')}
             >
               <MessageOutlined style={{ 
                 fontSize: '3rem', 
-                color: '#52c41a',
+                color: '#2c3e50',
                 marginBottom: '16px',
                 display: 'block'
               }} />
               <Title level={3} style={{ marginBottom: '16px' }}>
-                AI 智能问答
+                {t('home.features.chat.title')}
               </Title>
               <Paragraph style={{ color: '#666', marginBottom: '24px' }}>
-                基于RAG模型的中医知识库，像与真人老师对话一样学习
+                {t('home.features.chat.description')}
               </Paragraph>
               <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left' }}>
-                <li style={{ padding: '4px 0', color: '#52c41a' }}>• 经典古籍深度解读</li>
-                <li style={{ padding: '4px 0', color: '#52c41a' }}>• 现代临床指南对比</li>
-                <li style={{ padding: '4px 0', color: '#52c41a' }}>• 名家医案分析</li>
+                {(t('home.features.chat.features') || []).map((feature, index) => (
+                  <li key={index} style={{ padding: '4px 0', color: '#5d6d7e' }}>• {feature}</li>
+                ))}
               </ul>
             </Card>
           </Col>
@@ -240,28 +423,29 @@ function App() {
               hoverable
               style={{ 
                 height: '100%', 
-                borderRadius: '16px',
-                border: '1px solid #f0f0f0'
+                borderRadius: '8px',
+                border: '1px solid #e8e8e8',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)'
               }}
               bodyStyle={{ padding: '32px 24px', textAlign: 'center' }}
               onClick={() => setCurrentView('graph')}
             >
               <ShareAltOutlined style={{ 
                 fontSize: '3rem', 
-                color: '#1677ff',
+                color: '#5d6d7e',
                 marginBottom: '16px',
                 display: 'block'
               }} />
               <Title level={3} style={{ marginBottom: '16px' }}>
-                知识图谱
+                {t('home.features.graph.title')}
               </Title>
               <Paragraph style={{ color: '#666', marginBottom: '24px' }}>
-                可视化的中医知识网络，探索概念间的深层关联
+                {t('home.features.graph.description')}
               </Paragraph>
               <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left' }}>
-                <li style={{ padding: '4px 0', color: '#1677ff' }}>• 动态关联径发现</li>
-                <li style={{ padding: '4px 0', color: '#1677ff' }}>• 病机传变可视化</li>
-                <li style={{ padding: '4px 0', color: '#1677ff' }}>• 整体观念体现</li>
+                {(t('home.features.graph.features') || []).map((feature, index) => (
+                  <li key={index} style={{ padding: '4px 0', color: '#5d6d7e' }}>• {feature}</li>
+                ))}
               </ul>
             </Card>
           </Col>
@@ -271,28 +455,29 @@ function App() {
               hoverable
               style={{ 
                 height: '100%', 
-                borderRadius: '16px',
-                border: '1px solid #f0f0f0'
+                borderRadius: '8px',
+                border: '1px solid #e8e8e8',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)'
               }}
               bodyStyle={{ padding: '32px 24px', textAlign: 'center' }}
               onClick={() => setCurrentView('learning')}
             >
               <BookOutlined style={{ 
                 fontSize: '3rem', 
-                color: '#faad14',
+                color: '#85929e',
                 marginBottom: '16px',
                 display: 'block'
               }} />
               <Title level={3} style={{ marginBottom: '16px' }}>
-                个性化学习
+                {t('home.features.learning.title')}
               </Title>
               <Paragraph style={{ color: '#666', marginBottom: '24px' }}>
-                智能导师为您规划最适合的学习路径和复习计划
+                {t('home.features.learning.description')}
               </Paragraph>
               <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left' }}>
-                <li style={{ padding: '4px 0', color: '#faad14' }}>• 能力画像评估</li>
-                <li style={{ padding: '4px 0', color: '#faad14' }}>• 动态路径生成</li>
-                <li style={{ padding: '4px 0', color: '#faad14' }}>• 遗忘曲线优化</li>
+                {(t('home.features.learning.features') || []).map((feature, index) => (
+                  <li key={index} style={{ padding: '4px 0', color: '#5d6d7e' }}>• {feature}</li>
+                ))}
               </ul>
             </Card>
           </Col>
@@ -300,19 +485,19 @@ function App() {
       </div>
 
       {/* 系统状态 */}
-      <div style={{ padding: '40px 24px', background: '#fafafa', textAlign: 'center' }}>
+      <div style={{ padding: '40px 24px', background: '#f1f3f4', textAlign: 'center' }}>
         <Space align="center">
           <Badge status={backendStatus === 'connected' ? 'success' : 'error'} />
-          <span>后端服务: </span>
+          <span style={{ color: '#5d6d7e' }}>{t('home.status.backend')}: </span>
           {backendStatus === 'connected' && (
-            <span style={{ color: '#52c41a' }}>已连接 ✓</span>
+            <span style={{ color: '#16a085' }}>{t('home.status.connected')} ✓</span>
           )}
           {backendStatus === 'disconnected' && (
-            <span style={{ color: '#ff4d4f' }}>连接失败</span>
+            <span style={{ color: '#cb4335' }}>{t('home.status.disconnected')}</span>
           )}
           {backendInfo && (
-            <span style={{ color: '#666', marginLeft: '16px' }}>
-              运行时间: {Math.floor(backendInfo.uptime)}秒
+            <span style={{ color: '#85929e', marginLeft: '16px' }}>
+              {t('home.status.uptime')}: {Math.floor(backendInfo.uptime)}{isEn ? 's' : '秒'}
             </span>
           )}
         </Space>
@@ -323,18 +508,18 @@ function App() {
   // AI 问答页面 - 使用新的ChatBox组件
   const ChatPage = () => (
     <div style={{ height: 'calc(100vh - 64px)', display: 'flex' }}>
-      {/* 左侧边栏 - 参考设计稿 */}
+      {/* 左侧边栏 - 水墨风格 */}
       <div style={{ 
         width: '300px', 
-        background: '#fafafa', 
-        borderRight: '1px solid #f0f0f0',
+        background: '#f1f3f4', 
+        borderRight: '1px solid #e8e8e8',
         padding: '20px'
       }}>
-        <Card style={{ marginBottom: '16px', borderRadius: '12px' }}>
+        <Card style={{ marginBottom: '16px', borderRadius: '8px' }}>
           <Title level={4} style={{ marginBottom: '16px' }}>
-            快速问题
+            {t('chat.quickQuestionsTitle')}
           </Title>
-          {quickQuestions.map((question, index) => (
+          {(t('chat.quickQuestions') || []).map((question, index) => (
             <div 
               key={index}
               style={{
@@ -347,8 +532,8 @@ function App() {
                 transition: 'all 0.2s ease'
               }}
               onMouseEnter={(e) => {
-                e.target.style.background = '#e6f7ff';
-                e.target.style.borderColor = '#91d5ff';
+                e.target.style.background = '#e8e8e8';
+                e.target.style.borderColor = '#d0d0d0';
               }}
               onMouseLeave={(e) => {
                 e.target.style.background = '#f8f8f8';
@@ -360,12 +545,12 @@ function App() {
           ))}
         </Card>
         
-        <Card style={{ borderRadius: '12px' }}>
+        <Card style={{ borderRadius: '8px' }}>
           <Title level={4} style={{ marginBottom: '16px' }}>
-            学习提示
+            {t('chat.learningTips')}
           </Title>
-          <Paragraph style={{ fontSize: '14px', color: '#666' }}>
-            您可以询问中医理论、经典条文、方剂配伍、病机分析等各种问题，我会基于丰富的中医知识库为您提供详细解答。
+          <Paragraph style={{ fontSize: '14px', color: '#5d6d7e' }}>
+            {t('chat.tipContent')}
           </Paragraph>
         </Card>
       </div>
@@ -374,14 +559,14 @@ function App() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div style={{ 
           padding: '20px', 
-          borderBottom: '1px solid #f0f0f0',
-          background: '#fff'
+          borderBottom: '1px solid #e8e8e8',
+          background: '#f8f9fa'
         }}>
           <Title level={3} style={{ margin: 0 }}>
-            AI 智能问答
+            {t('chat.title')}
           </Title>
-          <Paragraph style={{ margin: '8px 0 0', color: '#666' }}>
-            中医学习伙伴
+          <Paragraph style={{ margin: '8px 0 0', color: '#5d6d7e' }}>
+            {t('chat.subtitle')}
           </Paragraph>
         </div>
         
@@ -417,12 +602,96 @@ function App() {
   };
 
   return (
-    <ConfigProvider locale={zhCN} theme={theme}>
-      <Layout style={{ minHeight: '100vh' }}>
+    <ConfigProvider locale={currentLanguage === 'zh' ? zhCN : enUS} theme={getTheme(isEn)}>
+      <Layout style={{ minHeight: '100vh' }} className={`lang-${currentLanguage}`}>
         <TopHeader />
         {renderCurrentView()}
+
+        {/* 登录模态框 */}
+        <Modal
+          title={t('auth.loginTitle') || '登录'}
+          open={loginModalVisible}
+          onCancel={() => {
+            setLoginModalVisible(false);
+            loginForm.resetFields();
+          }}
+          footer={null}
+          width={400}
+        >
+          <Form
+            form={loginForm}
+            name="login"
+            onFinish={handleLogin}
+            layout="vertical"
+            requiredMark={false}
+          >
+            <Form.Item
+              label={t('auth.username') || '用户名'}
+              name="username"
+              rules={[
+                {
+                  required: true,
+                  message: t('auth.usernameRequired') || '请输入用户名',
+                },
+              ]}
+            >
+              <Input
+                prefix={<UserOutlined />}
+                placeholder={t('auth.usernamePlaceholder') || '请输入用户名'}
+                size="large"
+              />
+            </Form.Item>
+
+            <Form.Item
+              label={t('auth.password') || '密码'}
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  message: t('auth.passwordRequired') || '请输入密码',
+                },
+              ]}
+            >
+              <Input.Password
+                prefix={<LockOutlined />}
+                placeholder={t('auth.passwordPlaceholder') || '请输入密码'}
+                size="large"
+              />
+            </Form.Item>
+
+            <Form.Item style={{ marginBottom: 0 }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                style={{ width: '100%' }}
+              >
+                {t('auth.loginButton') || '登录'}
+              </Button>
+            </Form.Item>
+
+            <div style={{ textAlign: 'center', marginTop: '16px' }}>
+              <Button type="link" size="small">
+                {t('auth.forgotPassword') || '忘记密码？'}
+              </Button>
+              <span style={{ color: '#d9d9d9' }}>|</span>
+              <Button type="link" size="small">
+                {t('auth.register') || '注册账号'}
+              </Button>
+            </div>
+          </Form>
+        </Modal>
       </Layout>
     </ConfigProvider>
+  );
+};
+
+// 主App组件
+function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }
 

@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Card, 
-  Radio, 
-  Button, 
-  Progress, 
-  Typography, 
-  Space, 
+import {
+  Card,
+  Radio,
+  Button,
+  Progress,
+  Typography,
+  Space,
   Alert,
   Divider,
   Tag,
   Result
 } from 'antd';
-import { 
-  CheckCircleOutlined, 
+import {
+  CheckCircleOutlined,
   ClockCircleOutlined,
   StarOutlined,
   TrophyOutlined
 } from '@ant-design/icons';
+import { useLanguage } from '../../hooks/useLanguage';
 import './LearningAssessment.css';
 
 const { Title, Paragraph, Text } = Typography;
@@ -104,6 +105,7 @@ const assessmentQuestions = [
 ];
 
 const LearningAssessment = ({ onComplete }) => {
+  const { t } = useLanguage();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
   const [selectedOption, setSelectedOption] = useState(null);
@@ -224,30 +226,30 @@ const LearningAssessment = ({ onComplete }) => {
     if (scorePercentage >= 80) {
       level = 'advanced';
       recommendations = [
-        '可以深入学习中医经典原文',
-        '建议结合临床案例进行学习',
-        '可以尝试独立分析复杂病例'
+        t('learning.assessment.recommendations.advanced.deepStudy'),
+        t('learning.assessment.recommendations.advanced.clinicalCases'),
+        t('learning.assessment.recommendations.advanced.complexAnalysis')
       ];
     } else if (scorePercentage >= 60) {
       level = 'intermediate';
       recommendations = [
-        '继续巩固基础理论知识',
-        '加强方剂学和诊断学学习',
-        '多做习题巩固理解'
+        t('learning.assessment.recommendations.intermediate.consolidate'),
+        t('learning.assessment.recommendations.intermediate.strengthen'),
+        t('learning.assessment.recommendations.intermediate.practice')
       ];
     } else if (scorePercentage >= 40) {
       level = 'basic';
       recommendations = [
-        '重点学习中医基础理论',
-        '建议系统学习脏腑经络',
-        '多阅读入门教材'
+        t('learning.assessment.recommendations.basic.focusBasics'),
+        t('learning.assessment.recommendations.basic.systematicStudy'),
+        t('learning.assessment.recommendations.basic.readMaterials')
       ];
     } else {
       level = 'beginner';
       recommendations = [
-        '从中医哲学基础开始学习',
-        '建议选择通俗易懂的入门书籍',
-        '可以观看基础教学视频'
+        t('learning.assessment.recommendations.beginner.startPhilosophy'),
+        t('learning.assessment.recommendations.beginner.chooseBooks'),
+        t('learning.assessment.recommendations.beginner.watchVideos')
       ];
     }
     
@@ -276,25 +278,24 @@ const LearningAssessment = ({ onComplete }) => {
       <div className="assessment-intro">
         <Card className="intro-card">
           <div className="intro-content">
-            <Title level={2}>中医知识水平评估</Title>
+            <Title level={2}>{t('learning.assessment.title')}</Title>
             <Paragraph>
-              通过这个简短的评估，我们将了解您的中医知识水平，
-              为您制定个性化的学习计划。
+              {t('learning.assessment.description')}
             </Paragraph>
             
             <div className="assessment-info">
               <Space direction="vertical" size="middle">
                 <div>
                   <ClockCircleOutlined style={{ marginRight: 8, color: '#1677ff' }} />
-                  <Text>评估时间：5分钟</Text>
+                  <Text>{t('learning.assessment.timeEstimate')}</Text>
                 </div>
                 <div>
                   <StarOutlined style={{ marginRight: 8, color: '#faad14' }} />
-                  <Text>题目数量：{assessmentQuestions.length}题</Text>
+                  <Text>{t('learning.assessment.questionCount')}: {assessmentQuestions.length}</Text>
                 </div>
                 <div>
                   <CheckCircleOutlined style={{ marginRight: 8, color: '#52c41a' }} />
-                  <Text>涵盖：基础理论、脏腑、诊断、方剂等</Text>
+                  <Text>{t('learning.assessment.coverage')}</Text>
                 </div>
               </Space>
             </div>
@@ -305,7 +306,7 @@ const LearningAssessment = ({ onComplete }) => {
               onClick={handleStartAssessment}
               style={{ marginTop: '24px' }}
             >
-              开始评估
+              {t('learning.assessment.startButton')}
             </Button>
           </div>
         </Card>
@@ -320,14 +321,14 @@ const LearningAssessment = ({ onComplete }) => {
         <Card>
           <Result
             icon={<TrophyOutlined style={{ color: '#faad14' }} />}
-            title="评估完成！"
-            subTitle={`您的中医知识水平：${getLevelText(assessmentResult.level)}`}
+            title={t('learning.assessment.completed')}
+            subTitle={`${t('learning.assessment.yourLevel')}: ${getLevelText(assessmentResult.level, t)}`}
           />
           
           <div className="result-details">
             <Space direction="vertical" size="large" style={{ width: '100%' }}>
               {/* 总体得分 */}
-              <Card size="small" title="总体得分">
+              <Card size="small" title={t('learning.assessment.overallScore')}>
                 <div className="score-display">
                   <Progress
                     type="circle"
@@ -338,14 +339,14 @@ const LearningAssessment = ({ onComplete }) => {
                   <div className="score-info">
                     <Title level={3}>{assessmentResult.scorePercentage}分</Title>
                     <Text type="secondary">
-                      用时：{formatTime(assessmentResult.completionTime)}
+                      {t('learning.assessment.timeUsed')}: {formatTime(assessmentResult.completionTime)}
                     </Text>
                   </div>
                 </div>
               </Card>
               
               {/* 分类得分 */}
-              <Card size="small" title="各模块得分">
+              <Card size="small" title={t('learning.assessment.moduleScores')}>
                 <Space direction="vertical" style={{ width: '100%' }}>
                   {Object.entries(assessmentResult.categoryScores).map(([category, scores]) => (
                     <div key={category} className="category-score">
@@ -367,9 +368,9 @@ const LearningAssessment = ({ onComplete }) => {
               </Card>
               
               {/* 学习建议 */}
-              <Card size="small" title="学习建议">
+              <Card size="small" title={t('learning.assessment.suggestions')}>
                 <ul className="recommendations">
-                  {assessmentResult.recommendations.map((rec, index) => (
+                  {getLocalizedRecommendations(assessmentResult.level, t).map((rec, index) => (
                     <li key={index}>{rec}</li>
                   ))}
                 </ul>
@@ -392,7 +393,7 @@ const LearningAssessment = ({ onComplete }) => {
         <div className="header-content">
           <div className="progress-info">
             <Text strong>
-              第 {currentQuestion + 1} 题 / 共 {assessmentQuestions.length} 题
+              {t('learning.assessment.questionProgress').replace('{current}', currentQuestion + 1).replace('{total}', assessmentQuestions.length)}
             </Text>
             <Progress 
               percent={progress} 
@@ -403,7 +404,7 @@ const LearningAssessment = ({ onComplete }) => {
           </div>
           <div className="time-info">
             <Text type={timeRemaining < 60 ? 'danger' : 'secondary'}>
-              剩余时间：{formatTime(timeRemaining)}
+              {t('learning.assessment.timeRemaining')}: {formatTime(timeRemaining)}
             </Text>
           </div>
         </div>
@@ -447,19 +448,19 @@ const LearningAssessment = ({ onComplete }) => {
             onClick={handlePreviousQuestion}
             disabled={currentQuestion === 0}
           >
-            上一题
+            {t('learning.assessment.previousQuestion')}
           </Button>
           
           <Space>
             <Button onClick={handleCompleteAssessment}>
-              提交评估
+              {t('learning.assessment.submitAssessment')}
             </Button>
             <Button 
               type="primary"
               onClick={handleNextQuestion}
               disabled={!selectedOption}
             >
-              {currentQuestion === assessmentQuestions.length - 1 ? '完成评估' : '下一题'}
+              {currentQuestion === assessmentQuestions.length - 1 ? t('learning.assessment.completeAssessment') : t('learning.assessment.nextQuestion')}
             </Button>
           </Space>
         </div>
@@ -469,14 +470,40 @@ const LearningAssessment = ({ onComplete }) => {
 };
 
 // 获取水平文本
-const getLevelText = (level) => {
-  const levelMap = {
-    beginner: '入门级',
-    basic: '基础级',
-    intermediate: '进阶级',
-    advanced: '高级'
-  };
-  return levelMap[level] || level;
+const getLevelText = (level, t) => {
+  return t(`learning.overview.levels.${level}`) || level;
+};
+
+// 获取多语言学习建议
+const getLocalizedRecommendations = (level, t) => {
+  switch (level) {
+    case 'advanced':
+      return [
+        t('learning.assessment.recommendations.advanced.deepStudy'),
+        t('learning.assessment.recommendations.advanced.clinicalCases'),
+        t('learning.assessment.recommendations.advanced.complexAnalysis')
+      ];
+    case 'intermediate':
+      return [
+        t('learning.assessment.recommendations.intermediate.consolidate'),
+        t('learning.assessment.recommendations.intermediate.strengthen'),
+        t('learning.assessment.recommendations.intermediate.practice')
+      ];
+    case 'basic':
+      return [
+        t('learning.assessment.recommendations.basic.focusBasics'),
+        t('learning.assessment.recommendations.basic.systematicStudy'),
+        t('learning.assessment.recommendations.basic.readMaterials')
+      ];
+    case 'beginner':
+      return [
+        t('learning.assessment.recommendations.beginner.startPhilosophy'),
+        t('learning.assessment.recommendations.beginner.chooseBooks'),
+        t('learning.assessment.recommendations.beginner.watchVideos')
+      ];
+    default:
+      return [];
+  }
 };
 
 export default LearningAssessment;

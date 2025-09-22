@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Card, Input, Select, Button, Space, Typography, Tooltip, Drawer, Badge } from 'antd';
-import { 
-  SearchOutlined, 
-  FullscreenOutlined, 
+import {
+  SearchOutlined,
+  FullscreenOutlined,
   ReloadOutlined,
   InfoCircleOutlined,
   ShareAltOutlined,
@@ -10,57 +10,58 @@ import {
   ZoomOutOutlined
 } from '@ant-design/icons';
 import * as d3 from 'd3';
+import { useLanguage } from '../../hooks/useLanguage';
 import './KnowledgeGraph.css';
 
 const { Search } = Input;
 const { Option } = Select;
 const { Title, Paragraph, Text } = Typography;
 
-// 中医知识图谱数据
-const sampleGraphData = {
+// 获取本地化的图谱数据
+const getSampleGraphData = (t) => ({
   nodes: [
     // 核心脏腑
-    { id: 'heart', name: '心', type: 'organ', category: '脏腑', level: 1 },
-    { id: 'liver', name: '肝', type: 'organ', category: '脏腑', level: 1 },
-    { id: 'spleen', name: '脾', type: 'organ', category: '脏腑', level: 1 },
-    { id: 'lung', name: '肺', type: 'organ', category: '脏腑', level: 1 },
-    { id: 'kidney', name: '肾', type: 'organ', category: '脏腑', level: 1 },
-    
+    { id: 'heart', name: t('graph.nodes.heart'), type: 'organ', category: t('graph.categories.organ'), level: 1 },
+    { id: 'liver', name: t('graph.nodes.liver'), type: 'organ', category: t('graph.categories.organ'), level: 1 },
+    { id: 'spleen', name: t('graph.nodes.spleen'), type: 'organ', category: t('graph.categories.organ'), level: 1 },
+    { id: 'lung', name: t('graph.nodes.lung'), type: 'organ', category: t('graph.categories.organ'), level: 1 },
+    { id: 'kidney', name: t('graph.nodes.kidney'), type: 'organ', category: t('graph.categories.organ'), level: 1 },
+
     // 生理功能
-    { id: 'shuaixue', name: '主血脉', type: 'function', category: '生理功能', level: 2 },
-    { id: 'cangsheng', name: '藏神', type: 'function', category: '生理功能', level: 2 },
-    { id: 'shuxie', name: '主疏泄', type: 'function', category: '生理功能', level: 2 },
-    { id: 'cangxue', name: '藏血', type: 'function', category: '生理功能', level: 2 },
-    { id: 'yunhua', name: '主运化', type: 'function', category: '生理功能', level: 2 },
-    { id: 'tongsheng', name: '统血', type: 'function', category: '生理功能', level: 2 },
-    { id: 'zhiqi', name: '主气', type: 'function', category: '生理功能', level: 2 },
-    { id: 'xuanfa', name: '宣发', type: 'function', category: '生理功能', level: 2 },
-    { id: 'cangzang', name: '主藏精', type: 'function', category: '生理功能', level: 2 },
-    { id: 'zhushui', name: '主水', type: 'function', category: '生理功能', level: 2 },
-    
+    { id: 'shuaixue', name: t('graph.nodes.shuaixue'), type: 'function', category: t('graph.categories.function'), level: 2 },
+    { id: 'cangsheng', name: t('graph.nodes.cangsheng'), type: 'function', category: t('graph.categories.function'), level: 2 },
+    { id: 'shuxie', name: t('graph.nodes.shuxie'), type: 'function', category: t('graph.categories.function'), level: 2 },
+    { id: 'cangxue', name: t('graph.nodes.cangxue'), type: 'function', category: t('graph.categories.function'), level: 2 },
+    { id: 'yunhua', name: t('graph.nodes.yunhua'), type: 'function', category: t('graph.categories.function'), level: 2 },
+    { id: 'tongsheng', name: t('graph.nodes.tongsheng'), type: 'function', category: t('graph.categories.function'), level: 2 },
+    { id: 'zhiqi', name: t('graph.nodes.zhiqi'), type: 'function', category: t('graph.categories.function'), level: 2 },
+    { id: 'xuanfa', name: t('graph.nodes.xuanfa'), type: 'function', category: t('graph.categories.function'), level: 2 },
+    { id: 'cangzang', name: t('graph.nodes.cangzang'), type: 'function', category: t('graph.categories.function'), level: 2 },
+    { id: 'zhushui', name: t('graph.nodes.zhushui'), type: 'function', category: t('graph.categories.function'), level: 2 },
+
     // 病理状态
-    { id: 'qixue_yugui', name: '气滞血瘀', type: 'pathology', category: '病理', level: 3 },
-    { id: 'ganyu_qizhi', name: '肝郁气滞', type: 'pathology', category: '病理', level: 3 },
-    { id: 'pixu', name: '脾虚', type: 'pathology', category: '病理', level: 3 },
-    { id: 'shenyang_xu', name: '肾阳虚', type: 'pathology', category: '病理', level: 3 },
-    { id: 'feiqi_xu', name: '肺气虚', type: 'pathology', category: '病理', level: 3 },
-    
+    { id: 'qixue_yugui', name: t('graph.nodes.qixue_yugui'), type: 'pathology', category: t('graph.categories.pathology'), level: 3 },
+    { id: 'ganyu_qizhi', name: t('graph.nodes.ganyu_qizhi'), type: 'pathology', category: t('graph.categories.pathology'), level: 3 },
+    { id: 'pixu', name: t('graph.nodes.pixu'), type: 'pathology', category: t('graph.categories.pathology'), level: 3 },
+    { id: 'shenyang_xu', name: t('graph.nodes.shenyang_xu'), type: 'pathology', category: t('graph.categories.pathology'), level: 3 },
+    { id: 'feiqi_xu', name: t('graph.nodes.feiqi_xu'), type: 'pathology', category: t('graph.categories.pathology'), level: 3 },
+
     // 症状
-    { id: 'xiongxie_zhang', name: '胸胁胀痛', type: 'symptom', category: '症状', level: 4 },
-    { id: 'qingzhi_bu_shu', name: '情志不舒', type: 'symptom', category: '症状', level: 4 },
-    { id: 'shishao', name: '食少', type: 'symptom', category: '症状', level: 4 },
-    { id: 'fatigue', name: '乏力', type: 'symptom', category: '症状', level: 4 },
-    { id: 'kechi', name: '咳嗽', type: 'symptom', category: '症状', level: 4 },
-    
+    { id: 'xiongxie_zhang', name: t('graph.nodes.xiongxie_zhang'), type: 'symptom', category: t('graph.categories.symptom'), level: 4 },
+    { id: 'qingzhi_bu_shu', name: t('graph.nodes.qingzhi_bu_shu'), type: 'symptom', category: t('graph.categories.symptom'), level: 4 },
+
     // 治法
-    { id: 'shugan_liqi', name: '疏肝理气', type: 'treatment', category: '治法', level: 5 },
-    { id: 'jianpi_yiqi', name: '健脾益气', type: 'treatment', category: '治法', level: 5 },
-    { id: 'buyang_yishen', name: '补阳益肾', type: 'treatment', category: '治法', level: 5 },
-    
+    { id: 'jianpi_yiqi', name: t('graph.nodes.jianpi_yiqi'), type: 'treatment', category: t('graph.legendLabels.treatment'), level: 5 },
+    { id: 'buyang_yishen', name: t('graph.nodes.buyang_yishen'), type: 'treatment', category: t('graph.legendLabels.treatment'), level: 5 },
+    { id: 'shugan_jieyu', name: t('graph.nodes.shugan_jieyu'), type: 'treatment', category: t('graph.legendLabels.treatment'), level: 5 },
+
     // 方剂
-    { id: 'xiaoyao_san', name: '逍遥散', type: 'formula', category: '方剂', level: 6 },
-    { id: 'sijunzi_tang', name: '四君子汤', type: 'formula', category: '方剂', level: 6 },
-    { id: 'jinkui_shenqi_wan', name: '金匮肾气丸', type: 'formula', category: '方剂', level: 6 }
+    { id: 'xiaoyao_san', name: t('graph.nodes.xiaoyao_san'), type: 'formula', category: t('graph.categories.formula'), level: 6 },
+    { id: 'mahuang_tang', name: t('graph.nodes.mahuang_tang'), type: 'formula', category: t('graph.categories.formula'), level: 6 },
+    { id: 'guizhi_tang', name: t('graph.nodes.guizhi_tang'), type: 'formula', category: t('graph.categories.formula'), level: 6 },
+    { id: 'shengmai_san', name: t('graph.nodes.shengmai_san'), type: 'formula', category: t('graph.categories.formula'), level: 6 },
+    { id: 'buzhong_yiqi_tang', name: t('graph.nodes.buzhong_yiqi_tang'), type: 'formula', category: t('graph.categories.formula'), level: 6 },
+    { id: 'liuwei_dihuang_wan', name: t('graph.nodes.liuwei_dihuang_wan'), type: 'formula', category: t('graph.categories.formula'), level: 6 }
   ],
   
   links: [
@@ -75,46 +76,49 @@ const sampleGraphData = {
     { source: 'lung', target: 'xuanfa', type: 'function', strength: 1 },
     { source: 'kidney', target: 'cangzang', type: 'function', strength: 1 },
     { source: 'kidney', target: 'zhushui', type: 'function', strength: 1 },
-    
+
     // 功能失常与病理
     { source: 'shuxie', target: 'ganyu_qizhi', type: 'pathology', strength: 0.8 },
     { source: 'yunhua', target: 'pixu', type: 'pathology', strength: 0.8 },
     { source: 'cangzang', target: 'shenyang_xu', type: 'pathology', strength: 0.8 },
     { source: 'zhiqi', target: 'feiqi_xu', type: 'pathology', strength: 0.8 },
-    
+
     // 病理与症状
     { source: 'ganyu_qizhi', target: 'xiongxie_zhang', type: 'symptom', strength: 0.9 },
     { source: 'ganyu_qizhi', target: 'qingzhi_bu_shu', type: 'symptom', strength: 0.9 },
     { source: 'ganyu_qizhi', target: 'qixue_yugui', type: 'development', strength: 0.7 },
-    { source: 'pixu', target: 'shishao', type: 'symptom', strength: 0.8 },
-    { source: 'pixu', target: 'fatigue', type: 'symptom', strength: 0.8 },
-    { source: 'feiqi_xu', target: 'kechi', type: 'symptom', strength: 0.8 },
-    
+
     // 治法与方剂
-    { source: 'shugan_liqi', target: 'xiaoyao_san', type: 'prescription', strength: 0.9 },
-    { source: 'jianpi_yiqi', target: 'sijunzi_tang', type: 'prescription', strength: 0.9 },
-    { source: 'buyang_yishen', target: 'jinkui_shenqi_wan', type: 'prescription', strength: 0.9 },
-    
+    { source: 'shugan_jieyu', target: 'xiaoyao_san', type: 'prescription', strength: 0.9 },
+    { source: 'jianpi_yiqi', target: 'buzhong_yiqi_tang', type: 'prescription', strength: 0.9 },
+    { source: 'buyang_yishen', target: 'liuwei_dihuang_wan', type: 'prescription', strength: 0.9 },
+
     // 病理与治法
-    { source: 'ganyu_qizhi', target: 'shugan_liqi', type: 'treatment', strength: 0.9 },
+    { source: 'ganyu_qizhi', target: 'shugan_jieyu', type: 'treatment', strength: 0.9 },
     { source: 'pixu', target: 'jianpi_yiqi', type: 'treatment', strength: 0.9 },
     { source: 'shenyang_xu', target: 'buyang_yishen', type: 'treatment', strength: 0.9 }
   ]
-};
+});
 
 const KnowledgeGraph = () => {
+  const { t, isEn } = useLanguage();
   const svgRef = useRef();
   const [selectedNode, setSelectedNode] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [graphData, setGraphData] = useState(sampleGraphData);
+  const [graphData, setGraphData] = useState(getSampleGraphData(t));
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+
+  // 更新图谱数据当语言改变时
+  useEffect(() => {
+    setGraphData(getSampleGraphData(t));
+  }, [t]);
 
   // 初始化图谱
   useEffect(() => {
     initializeGraph();
-    
+
     // 监听窗口大小变化
     const handleResize = () => {
       const container = svgRef.current?.parentElement;
@@ -125,10 +129,10 @@ const KnowledgeGraph = () => {
         });
       }
     };
-    
+
     window.addEventListener('resize', handleResize);
     handleResize();
-    
+
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -142,7 +146,7 @@ const KnowledgeGraph = () => {
   const initializeGraph = () => {
     // 这里可以从API加载真实的知识图谱数据
     // 目前使用样例数据
-    setGraphData(sampleGraphData);
+    setGraphData(getSampleGraphData(t));
   };
 
   const renderGraph = () => {
@@ -327,7 +331,7 @@ const KnowledgeGraph = () => {
       <Card className="control-panel" size="small">
         <Space wrap>
           <Search
-            placeholder="搜索概念..."
+            placeholder={t('graph.search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: 200 }}
@@ -339,31 +343,31 @@ const KnowledgeGraph = () => {
             onChange={setFilterCategory}
             style={{ width: 120 }}
           >
-            <Option value="all">全部分类</Option>
+            <Option value="all">{t('graph.allCategories')}</Option>
             {categories.filter(cat => cat !== 'all').map(category => (
               <Option key={category} value={category}>{category}</Option>
             ))}
           </Select>
           
-          <Button 
-            icon={<ReloadOutlined />} 
+          <Button
+            icon={<ReloadOutlined />}
             onClick={resetGraph}
-            title="重置图谱"
+            title={t('graph.reset')}
           />
           
-          <Button 
-            icon={<FullscreenOutlined />} 
-            title="全屏显示"
+          <Button
+            icon={<FullscreenOutlined />}
+            title={t('graph.fullscreen')}
           />
           
-          <Button 
-            icon={<ZoomInOutlined />} 
-            title="放大"
+          <Button
+            icon={<ZoomInOutlined />}
+            title={t('graph.zoomIn')}
           />
           
-          <Button 
-            icon={<ZoomOutOutlined />} 
-            title="缩小"
+          <Button
+            icon={<ZoomOutOutlined />}
+            title={t('graph.zoomOut')}
           />
         </Space>
       </Card>
@@ -379,19 +383,19 @@ const KnowledgeGraph = () => {
         
         {/* 图例 */}
         <Card className="legend" size="small">
-          <Title level={5}>图例</Title>
+          <Title level={5}>{t('graph.legend')}</Title>
           <div className="legend-items">
             {[
-              { type: 'organ', label: '脏腑', color: '#52c41a' },
-              { type: 'function', label: '功能', color: '#1677ff' },
-              { type: 'pathology', label: '病理', color: '#ff4d4f' },
-              { type: 'symptom', label: '症状', color: '#faad14' },
-              { type: 'treatment', label: '治法', color: '#722ed1' },
-              { type: 'formula', label: '方剂', color: '#13c2c2' }
+              { type: 'organ', color: '#52c41a' },
+              { type: 'function', color: '#1677ff' },
+              { type: 'pathology', color: '#ff4d4f' },
+              { type: 'symptom', color: '#faad14' },
+              { type: 'treatment', color: '#722ed1' },
+              { type: 'formula', color: '#13c2c2' }
             ].map(item => (
               <div key={item.type} className="legend-item">
                 <Badge color={item.color} />
-                <span>{item.label}</span>
+                <span>{t(`graph.legendLabels.${item.type}`)}</span>
               </div>
             ))}
           </div>
@@ -409,22 +413,22 @@ const KnowledgeGraph = () => {
         {selectedNode && (
           <div>
             <Paragraph>
-              <Text strong>类型：</Text> {selectedNode.category}
+              <Text strong>{t('graph.nodeDetails.type')}</Text> {selectedNode.category}
             </Paragraph>
             <Paragraph>
-              <Text strong>级别：</Text> 第{selectedNode.level}层
+              <Text strong>{t('graph.nodeDetails.level')}</Text> {t('graph.nodeDetails.layerPrefix')}{selectedNode.level}{t('graph.nodeDetails.layerSuffix')}
             </Paragraph>
             <Paragraph>
               <InfoCircleOutlined style={{ marginRight: 8 }} />
-              这是关于"{selectedNode.name}"的详细信息。在实际应用中，这里会显示从知识库中检索到的详细说明、相关理论、临床应用等内容。
+              {t('graph.nodeDetails.description').replace('{name}', selectedNode.name)}
             </Paragraph>
-            
-            <Button 
-              type="primary" 
+
+            <Button
+              type="primary"
               icon={<ShareAltOutlined />}
               style={{ marginTop: 16 }}
             >
-              探索相关概念
+              {t('graph.nodeDetails.exploreRelated')}
             </Button>
           </div>
         )}

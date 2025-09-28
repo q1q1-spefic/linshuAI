@@ -1,3 +1,12 @@
+/**
+ * 个性化中医学习路径系统
+ * 智能学习进度管理与路径推荐
+ *
+ * @author 刘自强Lucian
+ * @date 2025-09-28
+ * @copyright All rights reserved by 刘自强Lucian
+ */
+
 import React, { useState, useEffect } from 'react';
 import { 
   Card, 
@@ -35,7 +44,7 @@ const { Title, Paragraph, Text } = Typography;
 const { Step } = Steps;
 const { Panel } = Collapse;
 
-// 完整的学习路径数据
+// 完整的学习路径数据 - 刘自强Lucian 2025-09-28
 const learningPaths = {
   beginner: {
     title: '中医入门学习路径',
@@ -603,7 +612,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
     }
   }, [userLevel]);
 
-  // 加载用户进度
+  // 加载用户进度 - 刘自强Lucian 2025-09-28
   const loadUserProgress = () => {
     const savedProgress = localStorage.getItem(`tcm_learning_progress_${userLevel}`);
     if (savedProgress) {
@@ -618,7 +627,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
     }
   };
 
-  // 更新路径数据
+  // 更新路径数据 - 刘自强Lucian 2025-09-28
   const updatePathWithProgress = (progress) => {
     const updatedPath = { ...currentPath };
     updatedPath.modules.forEach((module, moduleIndex) => {
@@ -642,14 +651,14 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
     setCurrentPath(updatedPath);
   };
 
-  // 保存用户进度
+  // 保存用户进度 - 刘自强Lucian 2025-09-28
   const saveUserProgress = (newProgress) => {
     const mergedProgress = { ...userProgress, ...newProgress };
     setUserProgress(mergedProgress);
     localStorage.setItem(`tcm_learning_progress_${userLevel}`, JSON.stringify(mergedProgress));
   };
 
-  // 计算总体进度
+  // 计算总体进度 - 刘自强Lucian 2025-09-28
   const calculateOverallProgress = () => {
     const totalTopics = currentPath.modules.reduce((sum, module) => 
       sum + (module.topics ? module.topics.length : 0), 0
@@ -660,14 +669,14 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
     return totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
   };
 
-  // 计算模块进度
+  // 计算模块进度 - 刘自强Lucian 2025-09-28
   const calculateModuleProgress = (module) => {
     if (!module.topics) return 0;
     const completed = module.topics.filter(topic => topic.completed).length;
     return Math.round((completed / module.topics.length) * 100);
   };
 
-  // 获取模块状态
+  // 获取模块状态 - 刘自强Lucian 2025-09-28
   const getModuleStatus = (moduleIndex) => {
     if (moduleIndex === 0) return 'available';
     const prevModule = currentPath.modules[moduleIndex - 1];
@@ -675,7 +684,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
     return prevProgress >= 80 ? 'available' : 'locked';
   };
 
-  // 切换话题完成状态
+  // 切换话题完成状态 - 刘自强Lucian 2025-09-28
   const toggleTopicCompletion = (moduleIndex, topicIndex) => {
     const newPath = { ...currentPath };
     const topic = newPath.modules[moduleIndex].topics[topicIndex];
@@ -693,7 +702,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
     saveUserProgress(newProgress);
   };
 
-  // 切换资源完成状态
+  // 切换资源完成状态 - 刘自强Lucian 2025-09-28
   const toggleResourceCompletion = (moduleIndex, resourceIndex) => {
     const newPath = { ...currentPath };
     const resource = newPath.modules[moduleIndex].resources[resourceIndex];
@@ -722,7 +731,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
     setModalVisible(true);
   };
 
-  // 获取难度颜色
+  // 获取难度颜色 - 刘自强Lucian 2025-09-28
   const getDifficultyColor = (difficulty) => {
     const colors = {
       easy: 'green',
@@ -733,7 +742,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
     return colors[difficulty] || 'blue';
   };
 
-  // 获取难度文本
+  // 获取难度文本 - 刘自强Lucian 2025-09-28
   const getDifficultyText = (difficulty) => {
     const texts = {
       easy: '简单',
@@ -744,7 +753,7 @@ const LearningPath = ({ userLevel = 'beginner', assessmentResult }) => {
     return texts[difficulty] || difficulty;
   };
 
-  // 获取资源图标
+  // 获取资源图标 - 刘自强Lucian 2025-09-28
   const getResourceIcon = (type) => {
     const icons = {
       video: <VideoCameraOutlined />,

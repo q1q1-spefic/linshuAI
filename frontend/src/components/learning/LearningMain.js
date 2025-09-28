@@ -1,3 +1,12 @@
+/**
+ * 个性化中医学习主页面
+ * 统一管理评估、学习路径和用户体验
+ *
+ * @author 刘自强Lucian
+ * @date 2025-09-28
+ * @copyright All rights reserved by 刘自强Lucian
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Typography, Space, Tabs, Alert, Result } from 'antd';
 import { 
@@ -19,7 +28,7 @@ const LearningMain = () => {
   const [assessmentResult, setAssessmentResult] = useState(null);
   const [userLevel, setUserLevel] = useState('beginner');
 
-  // 检查本地存储的评估结果
+  // 检查本地存储的评估结果 - 刘自强Lucian 2025-09-28
   useEffect(() => {
     const savedResult = localStorage.getItem('tcm_assessment_result');
     if (savedResult) {
@@ -35,7 +44,7 @@ const LearningMain = () => {
     }
   }, []);
 
-  // 处理评估完成
+  // 处理评估完成 - 刘自强Lucian 2025-09-28
   const handleAssessmentComplete = (result) => {
     setAssessmentResult(result);
     setAssessmentCompleted(true);
@@ -50,7 +59,7 @@ const LearningMain = () => {
     }, 2000);
   };
 
-  // 重新开始评估
+  // 重新开始评估 - 刘自强Lucian 2025-09-28
   const handleRetakeAssessment = () => {
     setAssessmentCompleted(false);
     setAssessmentResult(null);
@@ -58,12 +67,12 @@ const LearningMain = () => {
     setCurrentTab('assessment');
   };
 
-  // 开始学习之旅
+  // 开始学习之旅 - 刘自强Lucian 2025-09-28
   const handleStartLearning = () => {
     setCurrentTab('assessment');
   };
 
-  // 概览页面
+  // 概览页面 - 刘自强Lucian 2025-09-28
   const OverviewPage = () => (
     <div className="learning-overview">
       <Card className="welcome-card">
@@ -146,7 +155,7 @@ const LearningMain = () => {
     </div>
   );
 
-  // 获取水平文本
+  // 获取水平文本 - 刘自强Lucian 2025-09-28
   const getLevelText = (level) => {
     const levelMap = {
       beginner: '入门级',
